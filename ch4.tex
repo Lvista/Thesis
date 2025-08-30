@@ -1,0 +1,199 @@
+% !TEX root = ch4.tex
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\input{./config}
+\begin{document}
+% \makecover
+\else
+\fi
+%% ---DO NOT MODIFY END---
+%-------------------第4章------------------------
+
+\section{与GamePad的对比实验}
+ 
+本章进行探索性实验。为验证所提出的穿戴式单手控制器的有用性，设计了输入与无人机动作的映射关系。在模拟器中实现后，与GamePad进行对比实验。GamePad是目前最广泛使用的传统双手遥控器，通过本实验旨在确认本方案的潜力，发现系统整体的不足，并探索各方面的改进方向。
+
+首先说明本次实验中使用的输入与无人机动作的映射关系，然后描述实验使用的关卡和问卷，接着展示实验流程，最后给出实验结果并进行讨论。
+
+\subsection{动作映射}
+
+本实验使用所提出的原型和Logicool Gamepad F310（图\ref{5.1-1-logicool}）作为输入设备。
+
+表\ref{tab:gesture}显示了所提出原型的输入（手势）与无人机动作的映射关系，“无人机输入”对应于3.2节各个动作的输入。在此映射中，当拇指与食指接触时，激活“可前进”状态，在该状态下，通过手部的Yaw、Pitch、用力捏取这3个动作的组合实现无人机在三维空间中的移动；当拇指与中指接触时，激活“可后退”状态，在该状态下，通过手部的Yaw和用力捏取动作来控制无人机的后退与后退偏移。这种设计有以下原因：
+
+\begin{table}[b]
+    \centering
+    \caption{\label{tab:gesture}动作映射}
+    \begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{3.8cm} >{\centering\arraybackslash}p{2cm} >{\centering\arraybackslash}p{3cm}}
+        \toprule
+        \textbf{状态} & \textbf{手势}           & \textbf{无人机输入} & \textbf{无人机动作} \\
+        \midrule
+        \multirow{3}{3cm}{可前进}
+                      & 手腕左右旋转 (Yaw)       & \(u_y\)        & 视角旋转 (Yaw)    \\
+                      & 手腕上下运动 (Pitch)     & \(u_t\)        & 升降 (Throttle) \\
+                      & 用力捏取               & \(u_p\)        & 前进            \\
+        \midrule
+        \multirow{3}{3cm}{可后退}
+                      & 手腕左右旋转 (Yaw)       & \(u_r\)        & 横移 (Roll)     \\
+                      & 手腕上下旋转 (Pitch)     & 无               & 无             \\
+                      & 用力捏取               & \(u_p\)        & 后退            \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item 实际的直升机飞行中，可以单独或组合使用前进+方向转换+升降的基本操作。
+    \item 在大多数场景中，无人机的前进动作比后退动作更加频繁。
+\end{itemize}
+
+GamePad使用两个摇杆作为位置控制的输入。左摇杆控制水平面移动（Pitch和Roll），右摇杆控制视角旋转和升降（Throttle和Yaw）。
+
+需要注意的是，本方案使用的手腕旋转手势类似于鼠标或触摸板的位置映射控制（Position Mapping Control），将手腕运动的幅度按一定比例映射为无人机移动的距离。而GamePad使用方向触发控制（Direction Trigger Control），摇杆的方向对应移动方向，摇杆从零点的偏移量对应速度。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.7\linewidth]{fig/4.1-logicool.png}
+    \caption{\label{5.1-1-logicool}Logicool Gamepad F310(https://resource.logitechg.com/)}
+\end{figure}
+
+\subsection{实验关卡和问卷}\label{ssec:coures_and_qustionnaire}
+
+本次实验中，参与者需要完成在无人机模拟器中构建的实验关卡。参与者首先在练习关卡上进行练习，然后通过4条难度不同的关卡（图\ref{fig:5.2-1-4courses}）。操作者需要逐个通过"门"，每个门的尺寸为$4 \times 4$（英尺），所有门都设置为可碰撞对象。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{fig/4.2-4courses.pdf}
+    \caption{\label{fig:5.2-1-4courses}四条不同难度(NOO)的路线：红色方框为“门”，黑色线条为路径}
+\end{figure}
+
+使用操作数（Number of operations, NOO）来表示路线的难度。NOO的计算方法如下：
+
+\begin{itemize}
+    \item 基于关卡的路径，计算其最低所需基本操作数（Yaw, Pitch, Roll, Throttle）。
+    \item 两个连续门之间的NOO由必要最小操作数决定。
+    \item 对于2个或多个平行门（比如图\ref{fig:5.2-1-4courses}中Level 2的6\~9号），虽然无必要操作，但操作者仍需保持稳定飞行，所以无论通过门数量有多少NOO均记录为1。
+\end{itemize}
+
+例如，图\ref{fig:5.2-1-4courses}所示Level 2路线的NOO计算如下：
+
+\begin{itemize}
+    \item 门\textcircled{1} $\Rightarrow$门\textcircled{2}: 1(前进)
+    \item 门\textcircled{2} $\Rightarrow$门\textcircled{3}: 2(上升＋前进)
+    \item 门\textcircled{3} $\Rightarrow$门\textcircled{4}: 2(下降＋前进)
+    \item 门\textcircled{4} $\Rightarrow$门\textcircled{5}: 3(视角旋转＋上升+前进)
+    \item 门\textcircled{5} $\Rightarrow$门\textcircled{6}: 3(视角旋转＋下降+前进)
+    \item 门\textcircled{6} $\Rightarrow$门\textcircled{9}: 1(前进)
+\end{itemize}
+
+问卷使用Di等人\cite{di2022natural}采用的两个问卷。一个是关于身体认知的问卷（Embodied Cognition（EC）），另一个是关于VR体验的问卷（Virtual Experience（VE））（参见表\ref{tab:Q1}和表\ref{tab:Q2}）。将其翻译为中文，排除与本次实验无关的第16项，问卷评价形式采用7级评价。
+
+问卷EC主要评价以下3个方面：
+(1) 自我定位感（Self-location）：身体刺激的感知和位置的认知（问题项目 6, 7, 9, 14, 15, 20）。
+(2) 身体所有感（Body-ownership）：身体所有感的意识（问题项目 8, 11, 12, 13, 15, 17, 18, 19）。
+(3) 动作主体感（Agency）：对动作的控制感（问题项目 1, 2, 3, 4, 5, 10）。
+
+\begin{table}[]
+    \centering
+    \caption{问卷EC（Embodied Cognition）}
+    \label{tab:Q1}
+    \begin{tabular}{l}
+        1. 我感觉我在操控无人机                    \\
+        2. 无人机按照我的指示行动                   \\
+        3. 无人机按我想的那样运动                   \\
+        4. 我感觉自己对看到的动作负有责任               \\
+        5. 无人机在自己运动                      \\
+        6. 我感觉身处虚拟环境中                    \\
+        7. 我感觉自己的视野变成了无人机的视角            \\
+        8. 我感觉变成了无人机                     \\
+        9. 我有与无人机同步运动的感觉                 \\
+        10. 我感觉自己的手在操作无人机               \\
+        11. 我感觉自己与自己的身体分离               \\
+        12. 我感觉有另一个身体                    \\
+        13. 我感觉无人机的动作受到我的动作影响          \\
+        14. 我在无人机起飞时感到上升感               \\
+        15. 我感觉像无人机一样在漂浮                \\
+        (16). 我在无人机着陆时感到下降感             \\
+        17. 我感觉以某种形式与无人机相连              \\
+        18. 我感觉无人机是自己的一部分               \\
+        19. 我感觉无人机就是我自己                  \\
+        20. 我感觉与无人机在同一个地方
+    \end{tabular}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \caption{问卷VE（Virtual Experience）}
+    \label{tab:Q2}
+    \begin{tabular}{l}
+        1. 这种控制方法反应迅速    \\
+        2. 这种控制方法很舒适     \\
+        3. 这种控制方法很简单     \\
+        4. 这种控制方法没有错误    \\
+        5. 这种控制方法容易学习    \\
+        6. 这种控制方法很自然     \\
+        7. 这种控制方法很有用     \\
+        8. 我还想再使用这种控制方法
+    \end{tabular}
+\end{table}
+
+\subsection{实验流程}
+共有24名参与者（22～28岁；男性23名，女性1名；全部为右利手）参加了本实验。所有人都没有无人机操作经验。实验采用被试间设计（between subject design），分为2组。每组12人，一组使用本方案的控制器（N组），另一组使用GamePad（T组）。两组都通过PC显示器进行FPV操作。
+
+实验由4个阶段组成（S1：介绍，S2：练习，S3：主实验，S4：对比调查）。
+
+\begin{itemize}
+    \item \textbf{S1} 向参与者说明实验目的、流程和操作方法，获得知情同意。
+    \item \textbf{S2} 参与者在练习路线上熟悉控制器操作。
+    \item \textbf{S3} 参与者按难度顺序各通过图\ref{fig:5.2-1-4courses}所示的4条路线1次，共24名$\times$ 4路线$\times$ 1轮 = 96次试验。
+    \item \textbf{S4} 参与者完成问卷EC和问卷VE。
+\end{itemize}
+
+% \clearpage
+
+\subsection{结果}\label{study1_result}
+
+由于每个"门"都设置为可碰撞对象，记录了碰撞次数。各组的平均碰撞次数如图\ref{fig:5.4-1-exp1_time_and_collision}(左)所示。平均通过时间如图\ref{fig:5.4-1-exp1_time_and_collision}(右)所示。N组的通过时间和碰撞次数都高于T组。
+
+图~\ref{fig:5.4-1-result-Q1Q2}显示了问卷EC和问卷VE各方面N组与T组的平均得分。在所有3个方面都未见显著差异（$p<.05$），但N组在身体所有感（Body-ownership）方面呈现较高趋势。
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig/4.3-line_chart_collision_count_trend.png}
+    \end{subfigure}
+    % \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig/4.4-line_chart_flight_time_trend.png}
+    \end{subfigure}
+    \caption{\label{fig:5.4-1-exp1_time_and_collision}平均碰撞次数和平均通过时间}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{fig/4.6-questionnaire_1and2_t-test.png}
+    \caption{\label{fig:5.4-1-result-Q1Q2}“身体认知”结果（左）“VR体验”结果（右）}
+\end{figure}
+
+\subsection{讨论}
+
+问卷各方面的结果均未见显著差异。从实验结果来看，自我定位感和身体所有感呈现良好趋势。另一方面，整体上未见显著优势。这可能与参与者平时使用GamePad的习惯有关。习惯GamePad的人倾向于GamePad。而平时不使用GamePad的人（本次实验中有两人）回答更喜欢本方案。作为解决此问题的对策，可以将比较对象从一般熟知的Gamepad替换为DJI Avata等单手控制器，以减少影响。与DJI Avata的比较实验将在第五章中述及。
+
+此外，我们注意到实验中的参与者在前进的同时进行转向时失误率较高。我们首先考虑了手势-无人机动作映射表\ref{tab:gesture}的设计合理性。本实验的GamePad中，前进（Pith）放在左摇杆，转向（Yaw）放在右摇杆，采用的是一种前进（Pith）与转向（Yaw）分离的方案。而本方案将两个动作整合在一起，前进（Pith）的同时可进行转向（Yaw）。对于这两种方案的合理性，需进一步的实验来验证。另外，我们也考虑了模拟器运动学的不足。本实验使用的无人机仿真器采用了简易的三维运动控制，也就是通过方向+位移来控制，未充分考虑实际的运动学。由于空中没有摩擦力，无人机在方向转换时缺乏横向向心力的问题。需要从运动学角度补偿方向转换时的力，改进仿真。
+
+\subsection{小结}
+
+本次实验中提出了手势与无人机动作的映射关系，并在穿戴设备原型中实现。本实验进行了与GamePad的比较实验。结果显示，在自我定位感和身体所有感方面呈现良好趋势，但在平均碰撞数、通过时间、主观评价方面，本方案的控制器不如GamePad。总结了以下因素和改进方案：
+
+\begin{itemize}
+    \item 由于参与者习惯GamePad，倾向于喜欢熟悉的方式。需要考虑与先行研究的比较实验。
+    \item 输入-无人机动作映射可能不自然。作为改进方案，需要比较多种映射方案。
+    \item 无人机方向转换时向心力不足。需要进行运动学修正，改进方向转换动作。
+\end{itemize}
+
+实验表明，本方案在沉浸感方面具有潜力。同时，为进一步研究提供了改进方向。
+
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\end{document}
+\fi
+%% ---DO NOT MODIFY END---

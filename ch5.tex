@@ -1,0 +1,271 @@
+% !TEX root = ch5.tex
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\input{./config}
+\begin{document}
+% \makecover
+\else
+\fi
+%% ---DO NOT MODIFY END---
+%-------------------第5章------------------------
+
+\section{HMD环境下三种模式的对比实验}
+ 
+本章将本方案与2种现有方法进行比较。
+
+第1种是以往研究中经常使用的基于IMU的单手控制方法\cite{kim2022intuitive,shin2019hand,budiyanto2021navigation,lee2023wearable}。该方法的特点是IMU的倾斜映射到无人机倾斜的模仿型控制模式，该控制方法已被证实在第三人称视角（TPV）下比第一人称视角（FPV）表现更优\cite{kim2022intuitive}。
+
+第2种是DJI Avata2，这是目前市场上最新的单手操作遥控器。本研究使用HTC Vive Controller\footnote{\texttt{https://www.vive.com/eu/accessory/controller/}}实现类似的映射。
+
+三种控制方法的对比如表\ref{tab:three-models}所示。
+
+\begin{table}[bhtp]
+    \centering
+    \caption{3种控制方法}
+    \label{tab:three-models}
+    \begin{tabular}{llp{3.5cm}}
+        \hline
+        模式          & 交互方式              & 输入                  \\ \hline
+        Mode1(本方案)      & 穿戴＋手势             & 手腕旋转＋手指接触＋捏取动作    \\ \hline
+        Mode2(IMU先行研究)   & 穿戴＋手势             & 手部倾斜               \\ \hline
+        Mode3(DJI Avata2) & 手持＋按钮＋触控板        & 按钮按下＋触控板滑动        \\ \hline
+    \end{tabular}
+\end{table}
+
+基于以上三种控制方法，设计以下两个对比实验。
+
+\textbf{实验1}比较Mode1和Mode2两种模式。两者都采用穿戴设备＋手势操作，但使用的手势和输入－无人机动作映射不同。本实验考察不同映射在FPV条件下会产生怎样的性能差异。
+
+\textbf{实验2}比较Mode1和Mode3两种模式。两者的输入－无人机动作映射相似，但交互方式不同。Mode1采用穿戴＋手势操作，Mode3采用手持＋按钮＋触控板。本实验考察不同交互方式在FPV条件下会产生怎样的性能差异。
+
+接下来首先说明3种控制方法及其在实验中的实现，然后展示针对本实验调整的实验关卡设计和问卷内容，然后描述实验流程，最后给出实验结果并进行讨论。
+
+\subsection{动作映射}
+
+\textbf{设备}\hspace{1pt}
+使用\ref{ssec:num1}节中的控制器原型、HTC Vive Controller和HTC Vive Cosmos Elite头戴显示器（HMD），三个定位器，一台计算机。
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{fig/5.1-study2-exp1-mapping.png}
+    \caption{实验1中Mode2（左）和Mode1（右）的动作映射}
+    \label{fig:exp1_mode1_and_mode2}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{fig/5.2-study2-exp2-mapping_compressed.pdf}
+    \caption{实验2中Mode3（左）和Mode1（右）的动作映射}
+    \label{fig:exp2_mode1_and_mode3}
+\end{figure}
+
+\textbf{动作映射}\hspace{1pt}
+图\ref{fig:exp1_mode1_and_mode2}显示实验1中Mode1和Mode2的动作映射，图\ref{fig:exp2_mode1_and_mode3}显示实验2中Mode1和Mode3的动作映射。实验1中不包含Throttle动作。这主要是因为Mode2中没有Throttle操作，所以Mode1中也省略该设置。另外，对应\ref{study1_result}节的讨论，将手腕旋转（Yaw）的映射改为横移。关于视角调整，不同于上次实验的用手腕左右旋转（Yaw），本次实验，并使用HMD进行辅助。本次研究仅实现使用HMD的调整方式。
+
+\textbf{HMD}\hspace{1pt}
+考虑到目前的FPV无人机通常与HMD一起使用，本次实验也使用HMD。使用HMD同步无人机视角。主要同步Yaw和Pitch两个自由度，头部的Yaw旋转和Pitch旋转与无人机云台相机视角同步。
+
+
+\begin{figure}[t]
+    \vspace{-2em}
+    \centering
+    \includegraphics[width=\linewidth]{fig/5.3-study2-exp1-course.pdf}
+    \caption{实验1的测试路线和练习路线}
+    \label{fig:study2-exp1-course}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{fig/5.4-study2-exp2-course.pdf}
+    \caption{实验2的测试路线和练习路线}
+    \label{fig:study2-exp2-course}
+\end{figure}
+
+\subsection{关卡和问卷设计}
+
+\textbf{关卡设计}\quad
+实验1和实验2分别设置测试关卡和练习关卡（图\ref{fig:study2-exp1-course}和图\ref{fig:study2-exp2-course}）。实验1的练习关卡模拟森林，用户需要操作无人机在森林中前进，左右移动穿过障碍物。实验1的测试关卡使用11$\times$22英尺的"门"，操作者需要按顺序通过"门"。该关卡的特点是仅通过前进和左右移动即可通过。实验2的练习关卡使用与\ref{ssec:coures_and_qustionnaire}节相同的练习关卡。测试关卡（图\ref{fig:study2-exp1-course}）使用4$\times$4英尺的"门"，与实验1相比"门"有了高度变化，需要控制无人机高度。所有障碍物和门都设置为可碰撞对象。
+
+\textbf{关卡难度}\quad
+难度计算规则与\ref{ssec:coures_and_qustionnaire}节相同。实验1测试关卡的NOO为8，实验2测试关卡的NOO为13。相比上次实验，本次实验还考虑距离因素。计算方法是基于依次连接各"门"中心点的路径（图\ref{fig:study2-exp1-course}的黑线），以第一个门为起点、最后一个门为终点计算总哈密顿距离。两条测试路线的哈密顿距离均为100。
+
+
+
+\textbf{问卷设计}\quad
+问卷与\ref{ssec:coures_and_qustionnaire}节使用的相同，但删除了问卷EC的第14项和第16项，因为与本次实验无关。另外，由于采用被试内设计（within-subjects design），问卷评价使用7级双向李克特量表。参与者比较两种模式，在各项目中选择符合自己预期的分数。与\ref{ssec:coures_and_qustionnaire}节相同，问卷EC涉及自我定位感（Self-location）、身体所有感（Body-ownership）、动作主体感（Agency）3个方面。此外，作为改进，将问卷VE分为以下3个方面进行评价\cite{sibarani2021usability}：
+(1)学习容易性（Learnability）：首次使用产品时能否快速掌握基本任务；
+(2)效率性和精度（Efficiency and Accuracy）：控制器的响应速度和精度；
+(3)满意度（Satisfaction）：用户对产品使用体验的整体主观评价。
+
+\subsection{实验流程}
+
+16名参与者参加本实验（22～28岁；男性16名；全部为右利手）。所有人都没有无人机操作经验。
+
+两个实验都采用被试内设计（within-subjects design）。实验1的流程如图\ref{fig:exp_order}所示，实验2也采用类似的实验设计。实验1中，参与者依次使用Mode1和Mode2。实验2中，参与者依次使用Mode1和Mode3。两种Mode的优先顺序是随机的。两个实验独立进行，所有人都佩戴HMD以FPV方式操作无人机，实验后给予报酬。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.8\linewidth]{fig/5.5-exp_order.png}
+    \caption{实验流程}
+    \label{fig:exp_order}
+\end{figure}
+
+\subsection{结果}
+
+\subsubsection{实验1(Mode1与Mode2的比较)}
+\textbf{主观评价}\quad
+由于采用被试内设计，使用7级双向李克特量表，因此使用Wilcoxon符号秩检验进行检定。检定结果如表\ref{tab:5.4-1}所示。结果显示，问卷EC中未见显著差异。问卷VE的效率性和精度一项确认显著差异[$W = 20, p <.05$]，Mode1表现良好。
+
+\textbf{客观评价}\quad
+记录了测试关卡的通过时间（图\ref{fig:5.6-dd_time_exp1}和图\ref{fig:5.8-dd_time_exp2}）、飞行距离（图\ref{fig:5.11-dd_distance_exp1}和图\ref{fig:5.12-dd_distance_exp2}）、碰撞次数（图\ref{fig:5.9-dd_collision_exp1}和图\ref{fig:5.10-dd_collision_exp2}），均用密度分布图显示。另外，对各指标进行配对t检验，结果并记在上述图中。在通过时间、碰撞次数、飞行距离方面，Mode1与Mode2无显著差异，但飞行距离中Mode1的平均值低于Mode2，分布也更加集中。
+
+\subsubsection{实验2(Mode1与Mode3的比较)}
+\textbf{主观评价}\quad
+问卷EC的Self-location[$W = 9.5, p <.005$]和Body-ownership[$W = 6.5, p <.002$]呈现显著差异，Mode1评价更高。问卷VE的Efficiency and Accuracy[$W = 12.5, p <.04$]中Mode3评价显著更高。
+
+\textbf{客观评价}\quad
+Mode1与Mode3在通过时间上有显著差异[$t[13]=5.40,p <.0002$]。碰撞次数和飞行距离无显著差异。
+
+\subsection{讨论}
+
+两个实验的结果表明，本方案在某些方面具有潜在优势。
+
+实验1的问卷EC中"Self-location"和"Body-ownership"两个结果显示，Mode1与Mode2的在沉浸感方面无显著差异。另一方面，问卷VE的"Efficiency and Accuracy"中，Mode1显著优于Mode2。这意味着Mode1更加稳定，对用户动作的反应更快，可靠性更高。该结论也可以从飞行距离的密度分布（图\ref{fig:5.11-dd_distance_exp1}和图\ref{fig:5.12-dd_distance_exp2}）中得到确认。出现这种结果是因为Mode1使用位置映射控制（Position Mapping Control），该控制类似于鼠标指针控制，能够实现高精度控制。另一方面，Mode2采用方向触发控制（Direction Trigger Control），虽然操作方法类似摇杆，但推测精密操作较困难。另外，与摇杆的自动复位不同，Mode2的复位需要依靠自己的感觉将手掌水平倾斜，对用户来说是个挑战。对此，Mode1通过手指接触控制输入的启用·禁用，相比Mode2具有反应更快的优点。
+
+\clearpage
+\begin{table}[t]
+    \centering
+    \begin{minipage}{\textwidth}
+        \centering
+        \caption{实验1：问卷EC}
+        \label{tab:5.4-1}
+        \begin{tabular}{@{}p{0.5\linewidth}ccc@{}}
+            \toprule
+            \textbf{项目}                            & \textbf{检验统计量} & \textbf{p值} & \textbf{偏好} \\ \midrule
+            Self-location(6, 7, 9, 15, 20)         & 33              & 0.24         & 无           \\
+            Body-ownership(8,11,12,13,15,17,18,19) & 33              & 0.24         & 无           \\
+            Agency(1, 2, 3, 4, 5, 10)              & 48              & 0.81         & 无           \\ \bottomrule
+        \end{tabular}
+    \end{minipage}
+
+    \vspace{0.5cm}
+
+    \begin{minipage}{\textwidth}
+        \centering
+        \caption{实验2：问卷EC}
+        \begin{tabular}{@{}p{0.5\linewidth}ccc@{}}
+            \toprule
+            \textbf{项目}                            & \textbf{检验统计量} & \textbf{p值} & \textbf{偏好} \\ \midrule
+            Self-location(6, 7, 9, 15, 20)         & 9.5             & 0.005        & mode1       \\
+            Body-ownership(8,11,12,13,15,17,18,19) & 6.5             & 0.002        & mode1       \\
+            Agency(1, 2, 3, 4, 5, 10)              & 51.5            & 1            & 无           \\ \bottomrule
+        \end{tabular}
+    \end{minipage}
+
+    \vspace{0.5cm}
+
+    \begin{minipage}{\textwidth}
+        \centering
+        \caption{实验1：问卷VE}
+        \begin{tabular}{@{}p{0.5\linewidth}ccc@{}}
+            \toprule
+            \textbf{项目}                 & \textbf{检验统计量} & \textbf{p值} & \textbf{偏好} \\ \midrule
+            Learnability(3, 5, 6)         & 22.5            & 0.11         & 无           \\
+            Efficiency and Accuracy(1, 4) & 20.0            & 0.04         & mode1       \\
+            Satisfaction(2, 7, 8)         & 38.0            & 0.39         & 无           \\ \bottomrule
+        \end{tabular}
+    \end{minipage}
+
+    \vspace{0.5cm}
+
+    \begin{minipage}{\textwidth}
+        \centering
+        \caption{实验2：问卷VE}
+        \begin{tabular}{@{}p{0.5\linewidth}ccc@{}}
+            \toprule
+            \textbf{项目}                 & \textbf{检验统计量} & \textbf{p值} & \textbf{偏好} \\ \midrule
+            Learnability(3, 5, 6)         & 44.5            & 0.9          & 无           \\
+            Efficiency and Accuracy(1, 4) & 12.5            & 0.037        & mode3       \\
+            Satisfaction(2, 7, 8)         & 34.0            & 0.69         & 无           \\ \bottomrule
+        \end{tabular}
+    \end{minipage}
+\end{table}
+
+\clearpage
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.6-dd_time_exp1.pdf}
+    \centering
+    \caption{实验1的通过时间}
+    \label{fig:5.6-dd_time_exp1}
+\end{figure}
+
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.8-dd_time_exp2.pdf}
+    \centering
+    \caption{实验2的通过时间}
+    \label{fig:5.8-dd_time_exp2}
+\end{figure}
+
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.11-dd_distance_exp1.pdf}
+    \centering
+    \caption{实验1的飞行距离}
+    \label{fig:5.11-dd_distance_exp1}
+\end{figure}
+
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.12-dd_distance_exp2.pdf}
+    \centering
+    \caption{实验2的飞行距离}
+    \label{fig:5.12-dd_distance_exp2}
+\end{figure}
+
+
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.9-dd_collision_exp1.pdf}
+    \centering
+    \caption{实验1的碰撞次数}
+    \label{fig:5.9-dd_collision_exp1}
+\end{figure}
+
+\begin{figure}[htb]
+    \includegraphics[width=\textwidth]{fig/5.10-dd_collision_exp2.pdf}
+    \centering
+    \caption{实验2的碰撞次数}
+    \label{fig:5.10-dd_collision_exp2}
+\end{figure}
+
+
+
+另外，也有一些值得注意的问题。实验1中，参与者提出"使用HMD使Mode2的操作变得容易"的意见，这与"Self-location"和"Body-ownership"的平均值呈现高于Mode1的趋势一致。该结果提示在HMD环境下Mode2可能提供优秀的沉浸感。另外，实验中参与者学习Mode1或Mode2使用方法时，Mode2更快被理解，Mode1在理解其映射逻辑方面需要时间。这反映在问卷VE的"Agency"得分中，Mode2的得分呈现高于Mode1的趋势。
+
+综上所述，在基于IMU的穿戴方法Mode1和Mode2中，虽然Mode1牺牲了一定的学习性和沉浸感，但明显改善了稳定性，Mode1具有更高的实用可能性。
+
+实验2中，在"Self-location"和"Body-ownership"的评价中，Mode1的沉浸感显著高于Mode3。该结果源于穿戴设备一般具有提高沉浸感的特性，此外手势操作作为自然交互发挥了重要作用。
+
+然而，在"Efficiency and Accuracy"方面，穿戴式的Mode1不如手持式的Mode3。出现这种结果的原因可以考虑以下2个因素。首先，相对于具有物理触觉反馈的Mode3，Mode1缺乏物理反馈。Mode1主要依赖视觉反馈，因此用户在判断自己的输入时不得不依赖视觉。感官信息的缺失增加了操作者的心理负担，这反映在主观评价的"Efficiency and Accuracy"中，也体现在图\ref{fig:5.6-dd_time_exp1}和图\ref{fig:5.8-dd_time_exp2}所示的通过时间中。反馈是自然交互的重要研究课题，今后的研究计划解决这个问题。
+
+另一个问题是，Mode1中前进动作时Roll\& Throttle动作处于激活状态，反之Roll\& Throttle动作时前进动作也处于激活状态，这种设计容易引起误操作。改进方法包括分离前进与Roll\& Throttle，使用明确区分的手势进行控制，以及为限制误操作的发生引入阈值或添加物理反馈提醒用户注意。
+
+综合以上2点，在具有相似映射逻辑的Mode1和Mode3中，Mode1提供了优秀的沉浸体验，但由于反馈和映射设计问题，在稳定性和效率性方面不如Mode3。为解决这些问题，需要进一步的改进和实验。
+
+\subsection{小结}
+
+本章比较了3种不同的无人机单手操作模式，分析了使用HMD的FPV环境中的主观评价和客观性能，得出以下结论：
+
+\begin{itemize}
+    \item 基于位置映射的手势控制的可能性。
+          Mode1（本方案）在沉浸感(问卷EC)、响应速度(问卷VE)、精度(问卷VE)方面表现优秀，特别是实验1中，"Efficiency and Accuracy"的主观评价优于Mode2。这表明位置映射控制方式比方向触发控制更稳定、更高效，虽然在学习成本和沉浸感(问卷EC)方面呈现不如Mode2的趋势，但其稳定性提高了实用可能性。
+
+    \item 穿戴单手操作设备的可能性。
+          实验2中，Mode1的沉浸感(问卷EC)显著优于Mode3，表明手势交互与穿戴设备的组合可能大幅提升用户的沉浸体验。然而，由于缺乏物理反馈，Mode1在"Efficiency and Accuracy"评价中不如Mode3，任务完成时间也更长。该结果再次确认了物理反馈对提高稳定性和效率性的重要性。
+
+    \item 提案方法的改进方向。
+          Mode1的设计存在若干课题。例如，动作映射逻辑可能引起误操作，缺乏反馈机制增加了用户操作的心理负担。今后的改进方向包括：优化动作映射逻辑以降低误操作风险，添加物理或触觉反馈以减少对视觉反馈的依赖，以及进一步研究反馈机制以促进自然交互。
+\end{itemize}
+
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\end{document}
+\fi
+%% ---DO NOT MODIFY END---

@@ -1,0 +1,229 @@
+% !TEX root = ch3.tex
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\input{./config}
+\begin{document}
+% \makecover
+\else
+\fi
+%% ---DO NOT MODIFY END---
+%-------------------第3章------------------------
+
+\section{FPV无人机穿戴式单手操作方法的提案}
+
+本章提出了FPV无人机穿戴式单手操作方法的设计方案，并进行了原型和测试系统的设计。
+
+\subsection{方案设计}\label{label:section2.1}
+
+遥控系统的延迟模型可以用以下公式表示：
+\begin{equation}
+    \label{formula:2.1}
+    y(t)=f(x(t-\tau)+\epsilon(t-\tau))
+\end{equation}
+其中：
+
+\begin{itemize}
+    \item $y(t)$ 是系统的输出，即无人机的行为，或响应
+    \item $x(t)$ 是输入信号（例如：控制命令或传感器数据）
+    \item $\tau$ 是系统的时间延迟（例如：控制器到无人机的信号传输延迟）
+    \item $f(\cdot)$ 是控制与无人机之间动作对应的映射函数
+    \item $\epsilon(t)$ 是噪声
+\end{itemize}
+
+对于以上的$x\xrightarrow{}y$的映射模型，本研究用两种方式实现。
+
+考虑到四轴无人机是在三维空间中运动的4自由度物体，因此$y(t)$可以分解为以下4个基本动作：
+\begin{itemize}
+    \item 横滚（Roll）：使无人机向横向倾斜（绕前后方向的纵轴旋转，实现左右移动）
+    \item 俯仰（Pitch）：使无人机向前后方向倾斜（绕左右方向的横轴旋转，实现前后移动）
+    \item 偏航（Yaw）：旋转无人机的朝向（绕水平面法线轴旋转），用于飞行中的方向转换
+    \item 油门（Throttle）：调整无人机的高度
+\end{itemize}
+
+\begin{figure}[t]
+    \vspace{-20pt}
+    \centering
+    \includegraphics[width=.8\linewidth]{fig/3.1-6DOF-hand.png}
+    \caption{手腕的自由度}
+    \label{fig:6dof}
+
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{fig/3.2-Left_Right.png}
+        \caption{偏航（Yaw）}
+        \label{fig:yaw}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{fig/3.3-pronation_and_supination.png}
+        \caption{横滚（Roll）}
+        \label{fig:roll}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{fig/3.4-up_down.png}
+        \caption{俯仰（Pitch）}
+        \label{fig:pitch}
+    \end{subfigure}
+    \caption{对应旋转自由度的手势}
+    \label{fig:three-guesture}
+\end{figure}
+
+\clearpage
+因此，一种方法是将控制端的输入分别映射到这4个基本动作。
+
+本研究实现一种类似于Yau等人\cite{yau2020subtle}的连续，细微手势。在该研究中，手势包括手腕旋转、手指接触、捏取和滑动。考虑到硬件实现的鲁棒性，本研究采用手腕旋转和手指接触·捏取动作作为手势。
+
+对于手腕旋转手势，如图\ref{fig:6dof}所示，手腕旋转包含3个旋转自由度和3个平移自由度。其中对应3个旋转自由度的手势如图\ref{fig:three-guesture}所示。
+
+对于手指接触·捏取动作手势，利用拇指与其他手指（例如：食指、中指）作为修饰输入，手指间的压力也可以作为额外输入信号。
+
+基于以上的输入，建立一种$x\xrightarrow{}y$的映射，即可实现实时飞行中的位置机动控制。这部分的具体映射在第4章和第5章两次实验前进行说明。
+
+
+另外一种方法类似于Kavarthapu\cite{kavarthapu2017hand}的基于深度学习，将手势与命令一一对应的方法。该研究所使用的是一种由基本手势进行排列组合成的通用手势。比如，基本手势包括手的上下左右摆动，组合手势就是由这四个组合成的，长度为n的序列。由于完成一个手势需要时间，将手势经过预测模型输出也需要时间，相对上一种方法实时性较差，本研究将用于对无人机施放离散命令。
+
+\subsection{原型实现}\label{ssec:num1}
+
+基于以上的控制理论，参考Covaciu\cite{covaciu2022control}等人的设计，进行了硬件原型的设计和实现。
+
+Covaciu\cite{covaciu2022control}采用CPU（图\ref{fig:3.5-circuit}-6）与IMU （图\ref{fig:3.5-circuit}-5）的设计，本方案在此基础上加入薄膜压力传感
+器（图\ref{fig:3.5-circuit}-(1-2)），和铜箔 （图\ref{fig:3.5-circuit}-(1-1)，2，3）。电路的仿真示意图如图\ref{fig:4.2-1-circuit}所示。
+
+所使用的组件规格如表\ref{tab:hardware}所示。CPU和IMU参考已有研究\cite{covaciu2022control}，采用带有无线传输的低功耗的ESP32，以及集成加速度计和陀螺仪的IMU，两者通过SCL和SDA双通道连接。为了扩展控制维度，本研究加入了小型薄膜压力传感器。传感器压力上限为22N，其阻值-压力关系是一个近似反比例曲线。由于实际测量该曲线较为困难，采用了生产厂家提供的经验曲线，如图\ref{fig:placeholder}。参考一项关于指侧捏力的研究\cite{呼慧敏2022中国成年人指侧捏力测量研究}，我们确定人在日常使用设备时捏力在5N至50N之间，对应于图中500g以上压力值，该部分近似线性。假定线性部分的阻值-压力关系如下：
+$$
+R = kF+R_0, F<22
+$$
+根据经验曲线，$k=0.29\pm 0.07$，偏置$R_0=8.9\pm1$。通过如图\ref{fig:3.5-circuit}所示的电阻R1分压电路，得到P1点的电位：
+$$
+V_{p1} = \frac{3.3R_1}{kF+R_0+R_1}
+$$
+综合$R_0$的大小和0域附近的电阻变化，我们取$R_1=10k\Omega$。
+
+考虑到同时具有柔韧性和优良的导电性的材料，这里使用铜箔分别附在大拇指，中指和无名指外侧，分别连接到图\ref{fig:3.5-circuit}的(1-1)，2和3。CPU通过将2和3端口软件设定为上拉输入模式。
+
+控制器原型实物如图\ref{fig:4.2-2-prototype}所示。CPU和IMU通过PCB电气连接并附着在手掌背部，用于手的姿势检测。薄膜压力传感器附在大拇指里侧，检测大拇指与其它手指之间的捏力。铜箔检测指间的触碰。
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig/test.pdf}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
+    \caption{电路示意图}
+    \label{fig:3.5-circuit}
+
+    \vspace{-10pt}
+    \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
+    \caption{原型电路图：}
+    \label{fig:4.2-1-circuit}
+    \vspace{-20pt}
+\end{figure}
+
+\begin{table}
+    \centering
+    \caption{\label{tab:hardware}组件规格}
+    \begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm} p{4cm} p{4cm}}
+        \toprule
+        \textbf{组件} & \textbf{型号}        & \textbf{特征}                                                  \\
+        \midrule
+        CPU         & ESP32-WROOM-32E    & 集成2.4 GHz Wi-Fi和蓝牙双模，低功耗                                   \\ \midrule
+        IMU       & BNO08X             & 集成三轴加速度计、三轴陀螺仪和三轴磁力计，内置校准和自适应功能，实现高精度和低延迟                 \\ \midrule
+        薄膜压力传感器     & DF9-16,2×2.5×0.1cm & 小型尺寸，适合穿戴设备                                                \\ \midrule
+        铜箔          & 0.05mm             & 具有柔韧性和优良的导电性                                               \\ \midrule
+        电源          & 5V-DC              & 标准电源                                                         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.7\linewidth]{ fig/3.6-prototype.png}
+    \caption{穿戴式控制器原型}
+    \label{fig:4.2-2-prototype}
+\end{figure}
+
+\clearpage
+
+\subsection{仿真器实现}
+
+使用Unity3D引擎构建无人机仿真器系统。
+
+四轴无人机使用Unity Asset Store提供的模型（图\ref{fig:4.2-4-vision_mode}）和基本的运动控制系统。实体的碰撞模型和尺寸如图\ref{fig:4.2-3-collision_model}所示。无人机的质量为$m=10$，角阻力（Angular Drag）为0.05。单位均为Unity内部单位。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.9\linewidth]{ fig/3.7-vision_mode.png}
+    \caption{四轴无人机可视化模型}
+    \label{fig:4.2-4-vision_mode}
+
+    \includegraphics[width=.9\linewidth]{ fig/3.8-collision_model.pdf}
+    \caption{四轴无人机实体碰撞模型（单位：英尺）}
+    \label{fig:4.2-3-collision_model}
+\end{figure}
+
+下面说明仿真器中无人机的运动控制。无人机的三维运动通过实现\ref{label:section2.1}节所述的4个动作来实现。
+
+\begin{itemize}
+    \item Yaw动作的输入与响应关系如下所示：
+          \begin{equation}
+              \begin{aligned}
+                  \theta_{\text {target }}(t) & =\theta_{\text {target }}(t-\Delta t)+u_y(t-\Delta t) \cdot v_{\max }, \\
+                  v(t)                        & =\frac{\theta_{\text {target }}(t)-\theta(t-\Delta t)}{\tau},          \\
+                  \theta(t)                   & =\theta(t-\Delta t)+v(t) \cdot \Delta t .
+              \end{aligned}
+          \end{equation}
+          其中：
+          $\theta_{\text {target }}(t)$是最终目标角度，作为独立变量存储和更新，$\theta(t)$是Unity画面实际更新的角度。两者都是相对于世界坐标系的垂直轴角度。$v(t)$是平滑更新函数。$u_y(t)$是Yaw的输入（例如遥控器的摇杆值）。$v_{\max }$是超参数，表示最大Yaw速度。$\tau$是平滑时间常数，这里设为0.25(s)。$\Delta t$是时间步长，指Unity的帧更新间隔。
+\end{itemize}
+
+\begin{itemize}
+    \item Roll动作使用Unity的物理系统，通过力的仿真进行控制：
+          \begin{equation}
+              \begin{gathered}
+                  \vec{F}_{\text {roll }}(t)=u_r(t-\Delta t) \cdot F_{\text {side }} \cdot \vec{i},
+              \end{gathered}
+          \end{equation}
+          其中，$u_r(t-\Delta t)$是输入，$\Vec{i}$是单位向量，始终指向无人机的左侧方，$F_{\text {side }}$是用于调整输入尺度的超参数。
+\end{itemize}
+
+\begin{itemize}
+    \item Pitch动作的控制如下所示：
+          \begin{equation}
+              \begin{gathered}
+                  \vec{F}_{\text {pitch }}(t)=u_p(t-\Delta t) \cdot F_{\text {forward }} \cdot \vec{j},
+              \end{gathered}
+          \end{equation}
+          其中，$u_p$是输入，$\Vec{j}$是单位向量，始终指向无人机的正前方，$F_{\text {forward }}$是用于调整输入尺度的超参数。
+\end{itemize}
+
+\begin{itemize}
+    \item Throttle动作的控制如下所示：
+          \begin{equation}
+              \begin{aligned}
+                  F_{\text{input}}(t) =
+                  \begin{cases}
+                      u_t(t-\Delta t) \cdot F_{\text{upward}},   & u_t > 0, \\
+                      u_t(t-\Delta t) \cdot F_{\text{downward}}, & u_t < 0, \\
+                      0,                                         & u_t = 0,
+                  \end{cases} \\
+                  \Vec{F}_{\text{up}}(t) = (m \cdot g + F_{\text{input}})(t) \cdot \Vec{k}
+              \end{aligned}
+          \end{equation}
+
+          其中，$u_t$是输入，$F_{\text {upward }}$是超参数，$m$是无人机质量，$g$是重力加速度（这里为$9.81 m/s^2$）。$\Vec{k}$是垂直向上的单位向量。需要注意的是，与Roll和Pitch动作不同，Throttle的上升和下降所施加的力是不同的。这是因为实际无人机在快速下降时会因涡环状态（Vortex Ring State）导致升力下降，可能失去控制。为避免这个问题，采用了抑制下降速度的设计。本仿真器也再现了这一特性。
+
+\end{itemize}
+
+\subsection{小结}
+本章提出了面向FPV无人机操作的动态手势交互界面，通过手腕旋转和手指接触等动作实现了高效且直观的控制。基于这一交互界面，采用低功耗、高精度的传感器和无线通信技术，设计并实现了穿戴式控制器原型。此外，使用Unity3D引擎构建了无人机仿真器系统。这为今后的界面可用性研究和优化奠定了基础。
+\clearpage
+%% ---DO NOT MODIFY BEGIN---
+\ifx\allfiles\undefined
+\end{document}
+\fi
+%% ---DO NOT MODIFY END---
