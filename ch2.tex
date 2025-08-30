@@ -17,7 +17,7 @@
 
 手势交互界面包括获取手势信息的硬件层和动作映射实现的逻辑层。根据信息获取方式的不同，现有研究可分为基于视觉的方法和基于传感器的方法。
 
-基于图像识别的手势无人机控制已有大量研究\cite{patrona2021overview,nguyen2024pose,kim2020comparative}。这类方法通过摄像头捕获手势图像，利用计算机视觉技术识别手势动作。然而，基于视觉的手势识别面临以下关键挑战：
+基于图像识别的手势无人机控制已有大量研究\cites{patrona2021overview,nguyen2024pose,kim2020comparative}。这类方法通过摄像头捕获手势图像，利用计算机视觉技术识别手势动作。然而，基于视觉的手势识别面临以下关键挑战：
 \begin{itemize}
     \item 实时性问题：图像处理算法存在固有延迟，而无人机控制对实时性要求较高
     \item 标准化困难：手势指令集缺乏统一标准，存在地区和个体差异。
@@ -27,9 +27,9 @@
 
 相比之下，使用传感器获取手势信息能够有效解决上述问题。目前主要有以下几种技术路线：
 
-最直观的实现是将IMU检测到的三轴旋转姿态角直接映射到无人机姿态\cite{mughees2020gesture,budiyanto2021navigation,muezzinouglu2021intelligent,lee2023wearable,cherpillod2019embodied,kim2022intuitive}。由于四旋翼无人机主要通过俯仰和横滚动作实现水平移动，这种模仿式控制方法在可穿戴设备上获得了较高用户评价\cite{kim2022intuitive,lee2023wearable}。但该方法要求用户保持手部水平，需要精确调整倾斜角度，容易导致手部疲劳和控制精度下降。
+最直观的实现是将IMU检测到的三轴旋转姿态角直接映射到无人机姿态\cites{mughees2020gesture,budiyanto2021navigation,muezzinouglu2021intelligent,lee2023wearable,cherpillod2019embodied,kim2022intuitive}。由于四旋翼无人机主要通过俯仰和横滚动作实现水平移动，这种模仿式控制方法在可穿戴设备上获得了较高用户评价\cites{kim2022intuitive,lee2023wearable}。但该方法要求用户保持手部水平，需要精确调整倾斜角度，容易导致手部疲劳和控制精度下降。
 
-为提高识别精度，研究人员探索了多种传感器组合方案。Bello等人使用带传感器的数据手套\cite{bello2023captainglove}，Muezzinouglu等人结合IMU和数据手套使用机器学习构建手势控制界面\cite{muezzinouglu2021intelligent}，主要针对静态手势操作。Yau等人\cite{yau2020subtle}同时使用压力传感器、IMU和触摸传感器构建精细手势控制界面，实现了动态手势操作。
+为提高识别精度，研究人员探索了多种传感器组合方案。Bello等人使用带传感器的数据手套\cites{bello2023captainglove}，Muezzinouglu等人结合IMU和数据手套使用机器学习构建手势控制界面\cites{muezzinouglu2021intelligent}，主要针对静态手势操作。Yau等人\cites{yau2020subtle}同时使用压力传感器、IMU和触摸传感器构建精细手势控制界面，实现了动态手势操作。
 
 基于以上分析，本研究选择压力传感器、IMU等多传感器融合的方案作为获取手势信息的硬件层，在设备结构和手势映射实现上提出新的解决方案。
 
@@ -37,15 +37,15 @@
 
 FPV（第一人称视角）无人机控制中，动作映射策略直接影响操控体验和精度。现有研究主要采用两种映射逻辑：
 
-目前比较流行的一种映射逻辑是姿态直接映射。比如通过利用全身姿态控制无人机位置，可以获得高度的沉浸感\cite{cherpillod2019embodied,rognon2018flyjacket}。然而，这种方法不适合持续控制，便携性也有限，由于身体疲劳导致控制精度下降，其应用范围受到限制。Hashemian等人\cite{hashemian2020headjoystick}提出了利用头戴式显示器（HMD）内置的倾斜检测功能，通过前后左右倾斜头部进行控制的方法。在与GamePad的比较实验中，该方法显示了更高的控制精度和沉浸感。然而，该方法依赖于HMD和办公椅，头部疲劳和运动病也无法避免。以上研究方案适合在室内固定位置进行远程控制，对硬件有一定要求，不适合户外使用。
+目前比较流行的一种映射逻辑是姿态直接映射。比如通过利用全身姿态控制无人机位置，可以获得高度的沉浸感\cites{cherpillod2019embodied,rognon2018flyjacket}。然而，这种方法不适合持续控制，便携性也有限，由于身体疲劳导致控制精度下降，其应用范围受到限制。Hashemian等人\cites{hashemian2020headjoystick}提出了利用头戴式显示器（HMD）内置的倾斜检测功能，通过前后左右倾斜头部进行控制的方法。在与GamePad的比较实验中，该方法显示了更高的控制精度和沉浸感。然而，该方法依赖于HMD和办公椅，头部疲劳和运动病也无法避免。以上研究方案适合在室内固定位置进行远程控制，对硬件有一定要求，不适合户外使用。
 
-多项研究采用上肢手势进行姿态映射\cite{mughees2020gesture,budiyanto2021navigation,muezzinouglu2021intelligent,lee2023wearable,cherpillod2019embodied,kim2022intuitive}，它们多采用姿态直接映射或手势命令进行控制。但在它们只验证了TPV场景下的可用性，对于FPV场景下的可用性仍需验证。
+多项研究采用上肢手势进行姿态映射\cites{mughees2020gesture,budiyanto2021navigation,muezzinouglu2021intelligent,lee2023wearable,cherpillod2019embodied,kim2022intuitive}，它们多采用姿态直接映射或手势命令进行控制。但在它们只验证了TPV场景下的可用性，对于FPV场景下的可用性仍需验证。
 
 另外一种映射逻辑是将无人机的机动动作分配到不同输入单元。
 
 FPV无人机控制可以使用目前市场上流行的GamePad型控制器，也有一些新型控制器。DJI于2022年8月25日发布的\footnote{\texttt{https://youtu.be/tU8BuomMd-4?si=PiL1KzKnjD9Pcp1i}}「Avata」控制器是一个握持型控制器，位置控制主要通过油门扳机和围绕水平纵轴的左右倾斜进行水平面位置控制。此外，2024年4月11日发布的\footnote{\texttt{https://youtu.be/RNhmV4yCP6M?si=3Z3twVxw2IQgOaPE}}「Avata 2」增加了摇杆，能够控制上升、下降和左右移动。
 
-Kim等人\cite{kim2022intuitive}使用了一种类似Avata2的握持型控制器和映射逻辑，不同的是，该方案对于水平的前后左右移动采用了直接姿态映射方案（如前述的上肢手势姿态映射\cite{mughees2020gesture}）。该研究比较了FPV和TPV两种环境下的可用性，结果显示FPV模式的性能不如TPV模式。
+Kim等人\cites{kim2022intuitive}使用了一种类似Avata2的握持型控制器和映射逻辑，不同的是，该方案对于水平的前后左右移动采用了直接姿态映射方案（如前述的上肢手势姿态映射\cites{mughees2020gesture}）。该研究比较了FPV和TPV两种环境下的可用性，结果显示FPV模式的性能不如TPV模式。
 
 综上，本研究提出一种新的动作映射实现逻辑方案，并进行对比实验。
 
@@ -53,16 +53,16 @@ Kim等人\cite{kim2022intuitive}使用了一种类似Avata2的握持型控制器
 
 为实现更复杂的手势控制功能，本研究还调研了基于深度学习的手势识别技术，重点关注非视觉传感器的应用。
 
-如第一章所述，被识别的手势分为离散和组合序列两种。其中Kavar-thapu等人\cite{kavarthapu2017hand}对组合序列手势进行了探索，对上划，下划，画圆等手势及其排列组合使用SED（Selective Encoder Decoder）模型框架进行识别。但值得注意的是，其对于不同序列长度的手势，都是使用对应的数据集进行训练后再进行测试。这意味着每个长度的手势都需要对应的手势数据集来训练。这大大增加了收集数据的负担。
+如第一章所述，被识别的手势分为离散和组合序列两种。其中Kavar-thapu等人\cites{kavarthapu2017hand}对组合序列手势进行了探索，对上划，下划，画圆等手势及其排列组合使用SED（Selective Encoder Decoder）模型框架进行识别。但值得注意的是，其对于不同序列长度的手势，都是使用对应的数据集进行训练后再进行测试。这意味着每个长度的手势都需要对应的手势数据集来训练。这大大增加了收集数据的负担。
 
 因此有必要寻找对于变长的派生序列手势具有良好泛化性能的模型。
 
 由于本质是一个序列到序列(Seq2Seq)的任务，参考了两种模型。
 
-一种是CTC类方法。CTC（Connectionist Temporal Classification）\cite{graves2006connectionist} 是一种专门用于处理输入序列和输出序列长度不一致问题的机器学习算法。其被运用在了如唇语识别\cite{xu2018lcanet}，手语识别\cite{li2020key}，语音识别\cite{lee2021intermediate}，手势识别\cite{wang2024continuous,karnerrealtime, dahiya2024efficient,sakuma2022mlp}等方面。其中，手势识别主要是对于离散手势进行探索，特别是LSTM配合CTC构架在处理序列手势输入时展现出良好表现。另外一项研究提出一种改进后的Transformer模型\cite{wang2024continuous},验证了6个基本手势（左、右、上、下、前、悬停）在人机交互场景下实时控制的可行性。CNN虽然主要是针对图像手势识别，也有相关研究证明了在IMU信号上进行手势识别的可行性\cite{karnerrealtime, dahiya2024efficient,sakuma2022mlp}，主要方法是用多通道1D卷积提取信号特征。
+一种是CTC类方法。CTC（Connectionist Temporal Classification）\cites{graves2006connectionist} 是一种专门用于处理输入序列和输出序列长度不一致问题的机器学习算法。其被运用在了如唇语识别\cites{xu2018lcanet}，手语识别\cites{li2020key}，语音识别\cites{lee2021intermediate}，手势识别\cites{wang2024continuous,karnerrealtime, dahiya2024efficient,sakuma2022mlp}等方面。其中，手势识别主要是对于离散手势进行探索，特别是LSTM配合CTC构架在处理序列手势输入时展现出良好表现。另外一项研究提出一种改进后的Transformer模型\cites{wang2024continuous},验证了6个基本手势（左、右、上、下、前、悬停）在人机交互场景下实时控制的可行性。CNN虽然主要是针对图像手势识别，也有相关研究证明了在IMU信号上进行手势识别的可行性\cites{karnerrealtime, dahiya2024efficient,sakuma2022mlp}，主要方法是用多通道1D卷积提取信号特征。
 总之，CTC算法在定长的手势上表现良好，需进一步探索其在变长序列手势上的表现。
 
-另外一种是类似Kavar-thapu等人\cite{kavarthapu2017hand}使用的自回归解码（Autoregressive Decoding），主要应用于大语言模型\cite{you2024linear}，以及样本生成\cite{kaneko2022transgesture}。其基于逐步生成的方式，每个步骤都依赖之前生成的内容。其针对每个类别都会学习单独的模型，因而对特征的表示能力较强。本研究也探索了其在变长序列手势上的表现。
+另外一种是类似Kavar-thapu等人\cites{kavarthapu2017hand}使用的自回归解码（Autoregressive Decoding），主要应用于大语言模型\cites{you2024linear}，以及样本生成\cites{kaneko2022transgesture}。其基于逐步生成的方式，每个步骤都依赖之前生成的内容。其针对每个类别都会学习单独的模型，因而对特征的表示能力较强。本研究也探索了其在变长序列手势上的表现。
 
 \subsection{小结}
 

@@ -72,7 +72,7 @@
 \clearpage
 因此，一种方法是将控制端的输入分别映射到这4个基本动作。
 
-本研究实现一种类似于Yau等人\cite{yau2020subtle}的连续，细微手势。在该研究中，手势包括手腕旋转、手指接触、捏取和滑动。考虑到硬件实现的鲁棒性，本研究采用手腕旋转和手指接触·捏取动作作为手势。
+本研究实现一种类似于Yau等人\cites{yau2020subtle}的连续，细微手势。在该研究中，手势包括手腕旋转、手指接触、捏取和滑动。考虑到硬件实现的鲁棒性，本研究采用手腕旋转和手指接触·捏取动作作为手势。
 
 对于手腕旋转手势，如图\ref{fig:6dof}所示，手腕旋转包含3个旋转自由度和3个平移自由度。其中对应3个旋转自由度的手势如图\ref{fig:three-guesture}所示。
 
@@ -81,16 +81,23 @@
 基于以上的输入，建立一种$x\xrightarrow{}y$的映射，即可实现实时飞行中的位置机动控制。这部分的具体映射在第4章和第5章两次实验前进行说明。
 
 
-另外一种方法类似于Kavarthapu\cite{kavarthapu2017hand}的基于深度学习，将手势与命令一一对应的方法。该研究所使用的是一种由基本手势进行排列组合成的通用手势。比如，基本手势包括手的上下左右摆动，组合手势就是由这四个组合成的，长度为n的序列。由于完成一个手势需要时间，将手势经过预测模型输出也需要时间，相对上一种方法实时性较差，本研究将用于对无人机施放离散命令。
+另外一种方法类似于Kavarthapu\cites{kavarthapu2017hand}的基于深度学习，将手势与命令一一对应的方法。该研究所使用的是一种由基本手势进行排列组合成的通用手势。比如，基本手势包括手的上下左右摆动，组合手势就是由这四个组合成的，长度为n的序列。由于完成一个手势需要时间，将手势经过预测模型输出也需要时间，相对上一种方法实时性较差，本研究将用于对无人机施放离散命令。
 
 \subsection{原型实现}\label{ssec:num1}
 
-基于以上的控制理论，参考Covaciu\cite{covaciu2022control}等人的设计，进行了硬件原型的设计和实现。
+基于以上的控制理论，参考Covaciu\cites{covaciu2022control}等人的设计，进行了硬件原型的设计和实现。
 
-Covaciu\cite{covaciu2022control}采用CPU（图\ref{fig:3.5-circuit}-6）与IMU （图\ref{fig:3.5-circuit}-5）的设计，本方案在此基础上加入薄膜压力传感
+Covaciu\cites{covaciu2022control}采用CPU（图\ref{fig:3.5-circuit}-6）与IMU （图\ref{fig:3.5-circuit}-5）的设计，本方案在此基础上加入薄膜压力传感
 器（图\ref{fig:3.5-circuit}-(1-2)），和铜箔 （图\ref{fig:3.5-circuit}-(1-1)，2，3）。电路的仿真示意图如图\ref{fig:4.2-1-circuit}所示。
 
-所使用的组件规格如表\ref{tab:hardware}所示。CPU和IMU参考已有研究\cite{covaciu2022control}，采用带有无线传输的低功耗的ESP32，以及集成加速度计和陀螺仪的IMU，两者通过SCL和SDA双通道连接。为了扩展控制维度，本研究加入了小型薄膜压力传感器。传感器压力上限为22N，其阻值-压力关系是一个近似反比例曲线。由于实际测量该曲线较为困难，采用了生产厂家提供的经验曲线，如图\ref{fig:placeholder}。参考一项关于指侧捏力的研究\cite{呼慧敏2022中国成年人指侧捏力测量研究}，我们确定人在日常使用设备时捏力在5N至50N之间，对应于图中500g以上压力值，该部分近似线性。假定线性部分的阻值-压力关系如下：
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/test.pdf}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+所使用的组件规格如表\ref{tab:hardware}所示。CPU和IMU参考已有研究\cites{covaciu2022control}，采用带有无线传输的低功耗的ESP32，以及集成加速度计和陀螺仪的IMU，两者通过SCL和SDA双通道连接。为了扩展控制维度，本研究加入了小型薄膜压力传感器。传感器压力上限为22N，其阻值-压力关系是一个近似反比例曲线。由于实际测量该曲线较为困难，采用了生产厂家提供的经验曲线，如图\ref{fig:placeholder}。参考一项关于指侧捏力的研究\cites{呼慧敏2022中国成年人指侧捏力测量研究}，我们确定人在日常使用设备时捏力在5N至50N之间，对应于图中500g以上压力值，该部分近似线性。假定线性部分的阻值-压力关系如下：
 $$
 R = kF+R_0, F<22
 $$
@@ -104,27 +111,7 @@ $$
 
 控制器原型实物如图\ref{fig:4.2-2-prototype}所示。CPU和IMU通过PCB电气连接并附着在手掌背部，用于手的姿势检测。薄膜压力传感器附在大拇指里侧，检测大拇指与其它手指之间的捏力。铜箔检测指间的触碰。
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{fig/test.pdf}
-    \caption{Enter Caption}
-    \label{fig:placeholder}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
-    \caption{电路示意图}
-    \label{fig:3.5-circuit}
-
-    \vspace{-10pt}
-    \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
-    \caption{原型电路图：}
-    \label{fig:4.2-1-circuit}
-    \vspace{-20pt}
-\end{figure}
-
-\begin{table}
+\begin{table}[b]
     \centering
     \caption{\label{tab:hardware}组件规格}
     \begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm} p{4cm} p{4cm}}
@@ -139,6 +126,23 @@ $$
         \bottomrule
     \end{tabular}
 \end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
+    \caption{电路示意图}
+    \label{fig:3.5-circuit}
+\end{figure}
+
+\begin{figure}
+    \vspace{-10pt}
+    \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
+    \caption{原型电路图：}
+    \label{fig:4.2-1-circuit}
+    \vspace{-20pt}
+\end{figure}
+
+
 
 \begin{figure}[htbp]
     \centering

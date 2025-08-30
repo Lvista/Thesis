@@ -1,5 +1,26 @@
 \documentclass[12pt]{ctexart}
 \usepackage[backend=biber,style=numeric,sorting=none, backref=true]{biblatex}  % 使用 APA 格式
+% 设置为右上角标
+% 方括号引用命令（行内）
+\DeclareCiteCommand{\citeb}[\mkbibbrackets]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+% 定义上标方括号格式的包装器
+\newcommand{\mkbibsuperbrackets}[1]{\textsuperscript{[#1]}}
+
+% 上标方括号引用命令（修正版）
+\DeclareCiteCommand{\cites}[\mkbibsuperbrackets]
+  {\iffieldundef{prenote}{}{\BibliographyWarning{Ignoring prenote argument}}%
+   \iffieldundef{postnote}{}{\BibliographyWarning{Ignoring postnote argument}}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {}
+
 \addbibresource{main.bib}  % 你的 .bib 文件
 
 % Figure

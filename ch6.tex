@@ -33,7 +33,7 @@ $$f: \mathcal{X} \rightarrow \mathcal{Y}$$
 
 \subsection{数据收集和数据增强}\label{ssec:data_clct}
 
-关于收集手势信息，目前的流行方案主要有单IMU以及IMU+sEMG，考虑到sEMG对手势信息的贡献度有限\cite{li2022research}，同时为了降低输入信息量，以便在边缘设备部署，本研究考虑使用单IMU获取手势序列信息。
+关于收集手势信息，目前的流行方案主要有单IMU以及IMU+sEMG，考虑到sEMG对手势信息的贡献度有限\cites{li2022research}，同时为了降低输入信息量，以便在边缘设备部署，本研究考虑使用单IMU获取手势序列信息。
 
 6位参与者（男性，22-27岁，均为右利手）使用？？节所示的原型设备进行收集，采样率为50Hz。参与者以坐姿进行手势收集，设备有线连接到计算机，计算机端使用图\ref{fig:HGR_Recorder}所示的应用收集数据，该应用的UI窗口有一个进度条（“状态显示”），用于提示数据写入的开始和终止。进度条的开始由监督者手动控制，达到100\%时自动终止。
 
@@ -78,7 +78,7 @@ $$
 $$
 \alpha \sim \mathcal{N}(\mu, \sigma^2)
 $$
-在这里，$\mu$取0，$3\sigma$取已有研究的经验值$15^\circ$\cite{d2020transformer}，即$\sigma=5^\circ$，
+在这里，$\mu$取0，$3\sigma$取已有研究的经验值$15^\circ$\cites{d2020transformer}，即$\sigma=5^\circ$，
 令原加速度/陀螺仪的三轴向量为$\bm{x}$，则旋转后的向量为：
 $$
 \bm{x}_r = \bm{x} \cdot {A_{\alpha}}^T
@@ -115,13 +115,11 @@ $$
 
 \subsection{模型和训练方法}\label{ssec:model_and_train}
 
-我们主要验证两类模型。一种是基于CTC算法的模型，一种是基于自回归算法的模型。我们先介绍基于CTC算法的识别模型框架，然后进一步介绍4种基于不同特征提取模型的识别模型。接下来介绍Kavarthapu等人\cite{kavarthapu2017hand}提出的基于SED自回归算法的模型（以下简称SED-AR模型），以及本研究提出的改进模型。
+我们主要验证两类模型。一种是基于CTC算法的模型，一种是基于自回归算法的模型。我们先介绍基于CTC算法的识别模型框架，然后进一步介绍4种基于不同特征提取模型的识别模型。接下来介绍Kavarthapu等人\cites{kavarthapu2017hand}提出的基于SED自回归算法的模型（以下简称SED-AR模型），以及本研究提出的改进模型。
 
 \subsubsection{CTC算法}
 
 基于CTC的模型框架如图\ref{fig:6.3-encoder_decoder}所示。在这里，原始输入是一个时序长度为$w$，样本大小为$n\times 1$的时序序列。$w$大小由采集样本实际时序长度决定，$n$为原始特征维度，在这里取6。在实践中，剪裁输入空间为$\mathbb{R}^{n\times w}$。
-
-与传统的编码-解码结构不同，CTC解码算法直接从特征序列进行解码，模型（Model）将源输入特征序列进行特征转换，得到$c\times k$的概率分布矩阵（probability distribution, p.d.），然后对该矩阵进行最大概率分类（Argmax Classification）得到编码序列，编码序列通过后处理（Post-processing）得到目标输出。在这里，用一个例子说明这个后处理过程。如表\ref{tab:output_eg}所示是前述的概率分布矩阵示例，每一行代表一个数据帧（或数据段），显示了其在$c=5$个手势分类上的概率，每行概率合为1。
 
 \begin{table}[htbp]
   \centering
@@ -150,7 +148,13 @@ $$
     \label{fig:6.3-encoder_decoder}
 \end{figure}
 
-对该矩阵进行最大概率分类（Argmax Classification），即$argmax$函数，得到编码后的输出$(0, 0, 1, 1, 0, 3, 0, 0)$，再按CTC解码\cite{graves2006connectionist}，通过去0和去重，例如上述例子经过CTC解码后得到手势序列$(1, 3)$，它的含义是[上划，左划]。
+与传统的编码-解码结构不同，CTC解码算法直接从特征序列进行解码，模型（Model）将源输入特征序列进行特征转换，得到$c\times k$的概率分布矩阵（probability distribution, p.d.），然后对该矩阵进行最大概率分类（Argmax Classification）得到编码序列，编码序列通过后处理（Post-processing）得到目标输出。在这里，用一个例子说明这个后处理过程。如表\ref{tab:output_eg}所示是前述的概率分布矩阵示例，每一行代表一个数据帧（或数据段），显示了其在$c=5$个手势分类上的概率，每行概率合为1。
+
+
+
+
+
+对该矩阵进行最大概率分类（Argmax Classification），即$argmax$函数，得到编码后的输出$(0, 0, 1, 1, 0, 3, 0, 0)$，再按CTC解码\cites{graves2006connectionist}，通过去0和去重，例如上述例子经过CTC解码后得到手势序列$(1, 3)$，它的含义是[上划，左划]。
 
 \subsubsection{CTC特征转换模型}\label{sssec:ctc_model}
 
@@ -182,7 +186,7 @@ $$
 
 \textbf{GRU}\hspace{5pt} 原始特征经过\ref{ssec:feature_ext}节的手动特征提取，并使用类似LSTM的模型结构，仅将核心分类层替换为GRU。
 
-\textbf{Transformer}\hspace{5pt} 原始序列特征直接作为Transformer模型的输入。参考Vaswani\cite{vaswani2017attention}等人的研究，构建如图\ref{fig:6.6-stru-transformer}所示的模型。模型将输入特征通过线性层投影到$D$维的Transformer隐藏空间，然后加入位置编码来保持序列位置信息。为了平衡梯度，稳定训练，在加入位置编码前进行元素点乘$D^2$。遵循BERT等模型的标准做法，使用attention mask处理填充位置\cite{devlin2019bert}核心部分使用$N$层Transformer编码器，前馈网络维度为$4N$。最后通过输出投影层将编码后的特征映射到$c=5$个类别的概率分布。
+\textbf{Transformer}\hspace{5pt} 原始序列特征直接作为Transformer模型的输入。参考Vaswani\cites{vaswani2017attention}等人的研究，构建如图\ref{fig:6.6-stru-transformer}所示的模型。模型将输入特征通过线性层投影到$D$维的Transformer隐藏空间，然后加入位置编码来保持序列位置信息。为了平衡梯度，稳定训练，在加入位置编码前进行元素点乘$D^2$。遵循BERT等模型的标准做法，使用attention mask处理填充位置\cites{devlin2019bert}核心部分使用$N$层Transformer编码器，前馈网络维度为$4N$。最后通过输出投影层将编码后的特征映射到$c=5$个类别的概率分布。
 
 \textbf{训练方法}\hspace{5pt} 以上模型均采用CTC损失来处理序列对齐问题。训练配置为：批大小8，学习率为0.0001，包含10个epoch的预热阶段，最大训练100个epoch，使用AdamW优化器（beta值为0.9和0.98），L2正则化权重衰减为0.0001，梯度裁剪最大范数为1.0，以及余弦退火学习率调度和15个epoch的早停机制来提升模型性能和稳定性。
 
@@ -190,7 +194,7 @@ $$
 
 作为对比，我们对SED-AR模型进行了复现和改进，改进模型用SED-CTC表示。
 
-\textbf{SED-AR模型}\hspace{5pt} 根据Kavarthapu\cite{kavarthapu2017hand}的研究，SED-AR模型采用经典的编码器-解码器架构，如图\ref{fig:6.7-stru-sed}，主要包含编码器（Encoder），选择层（Selective Layer）和解码器（Decoder）三个核心组件。首先通过全连接层将原始IMU特征映射到$D$维隐藏空间，后接层归一化，ReLU激活函数，Dropout层稳定训练和防止过拟合。之后将其输入$N$个双向LSTM（Bi-LSTM）捕获手势序列的时序依赖关系。将最后一层双向LSTM的细胞状态 (Cell State, $c\_t$)	和隐藏状态 (Hidden State, $h\_t$)输入选择层，选择层是一个全连接层（$2D\to2D$）。得到的各$2D$维的细胞状态 (Cell State)和隐藏状态 (Hidden State)设定为解码器的初始状态。解码器包含一个单向LSTM，输入词汇大小为$c=6$（4类手势+<START>标记+<END>标记），维度为$E$的嵌入层（Embedding）。LSTM层输出到两个全连接层（$2D\to D\to c(6)$），中间同样使用归一化层，ReLU激活函数，Dropout层稳定训练和防止过拟合。
+\textbf{SED-AR模型}\hspace{5pt} 根据Kavarthapu\cites{kavarthapu2017hand}的研究，SED-AR模型采用经典的编码器-解码器架构，如图\ref{fig:6.7-stru-sed}，主要包含编码器（Encoder），选择层（Selective Layer）和解码器（Decoder）三个核心组件。首先通过全连接层将原始IMU特征映射到$D$维隐藏空间，后接层归一化，ReLU激活函数，Dropout层稳定训练和防止过拟合。之后将其输入$N$个双向LSTM（Bi-LSTM）捕获手势序列的时序依赖关系。将最后一层双向LSTM的细胞状态 (Cell State, $c\_t$)	和隐藏状态 (Hidden State, $h\_t$)输入选择层，选择层是一个全连接层（$2D\to2D$）。得到的各$2D$维的细胞状态 (Cell State)和隐藏状态 (Hidden State)设定为解码器的初始状态。解码器包含一个单向LSTM，输入词汇大小为$c=6$（4类手势+<START>标记+<END>标记），维度为$E$的嵌入层（Embedding）。LSTM层输出到两个全连接层（$2D\to D\to c(6)$），中间同样使用归一化层，ReLU激活函数，Dropout层稳定训练和防止过拟合。
 
 与CTC解码不同，自回归解码是一个递归过程。上述模型得到的p.d.经过$argmax$解码得到一个时间步的类别标记。上述的解码器（图\ref{fig:6.7-stru-sed}中的Decoder）会执行$j+2$次解码（$j$为目标输出序列长度，加上<START>和<END>标记）。在训练阶段，真实目标序列逐个输入嵌入层；在预测阶段，则将前述通过模型得到的一个时间步的类别标记输入嵌入层。
 得到的预测序列与真实序列用交叉熵损失计算。
@@ -202,7 +206,7 @@ $$
     \label{fig:6.7-stru-sed}
 \end{figure}
 
-\textbf{SED-CTC模型}\hspace{5pt} 改进模型SED-CTC，主要是将自回归算法改为CTC算法。在实现上，结构与前者大体一致，不同的是，解码器中的嵌入层替换为编码器的输出，并且参考CTC算法\cite{graves2006connectionist}，由模型得到的p.d.和真实序列计算CTC损失。
+\textbf{SED-CTC模型}\hspace{5pt} 改进模型SED-CTC，主要是将自回归算法改为CTC算法。在实现上，结构与前者大体一致，不同的是，解码器中的嵌入层替换为编码器的输出，并且参考CTC算法\cites{graves2006connectionist}，由模型得到的p.d.和真实序列计算CTC损失。
 
 以上两个模型均使用与\ref{sssec:ctc_model}节相同的训练和优化方法。
 
