@@ -13,7 +13,7 @@
  
 本章将本方案与2种现有方法进行比较。
 
-第1种是以往研究中经常使用的基于IMU的单手控制方法\cites{kim2022intuitive,shin2019hand,budiyanto2021navigation,lee2023wearable}。该方法的特点是IMU的倾斜映射到无人机倾斜的模仿型控制模式，该控制方法已被证实在第三人称视角（TPV）下比第一人称视角（FPV）表现更优\cites{kim2022intuitive}。
+第1种是以往研究中经常使用的基于IMU的单手控制方法\cite{kim2022intuitive,shin2019hand,budiyanto2021navigation,lee2023wearable}。该方法的特点是IMU的倾斜映射到无人机倾斜的模仿型控制模式，该控制方法已被证实在第三人称视角（TPV）下比第一人称视角（FPV）表现更优\cite{kim2022intuitive}。
 
 第2种是DJI Avata2，这是目前市场上最新的单手操作遥控器。本研究使用HTC Vive Controller\footnote{\texttt{https://www.vive.com/eu/accessory/controller/}}实现类似的映射。
 
@@ -60,7 +60,7 @@
 \end{figure}
 
 \textbf{动作映射}\hspace{1pt}
-图\ref{fig:exp1_mode1_and_mode2}显示实验1中Mode1和Mode2的动作映射，图\ref{fig:exp2_mode1_and_mode3}显示实验2中Mode1和Mode3的动作映射。实验1中不包含Throttle动作。这主要是因为Mode2中没有Throttle操作，所以Mode1中也省略该设置。另外，对应\ref{study1_result}节的讨论，将手腕旋转（Yaw）的映射改为横移。关于视角调整，不同于上次实验的用手腕左右旋转（Yaw），本次实验，并使用HMD进行辅助。本次研究仅实现使用HMD的调整方式。
+图\ref{fig:exp1_mode1_and_mode2}显示实验1中Mode1和Mode2的动作映射，图\ref{fig:exp2_mode1_and_mode3}显示实验2中Mode1和Mode3的动作映射。与第4章的动作映射相同，二者均用中指和食指的切换Mapping1和Mapping2。验1中不包含Throttle动作。这主要是因为Mode2中没有Throttle操作，所以Mode1中也省略该设置。另外，对应\ref{study1_result}节的讨论，将手腕旋转（Yaw）的映射改为横移。关于视角调整，不同于上次实验的用手腕左右旋转（Yaw），本次实验，并使用HMD进行辅助。本次研究仅实现使用HMD的调整方式。
 
 \textbf{HMD}\hspace{1pt}
 考虑到目前的FPV无人机通常与HMD一起使用，本次实验也使用HMD。使用HMD同步无人机视角。主要同步Yaw和Pitch两个自由度，头部的Yaw旋转和Pitch旋转与无人机云台相机视角同步。
@@ -92,7 +92,7 @@
 
 
 \textbf{问卷设计}\quad
-问卷与\ref{ssec:coures_and_qustionnaire}节使用的相同，但删除了问卷EC的第14项和第16项，因为与本次实验无关。另外，由于采用被试内设计（within-subjects design），问卷评价使用7级双向李克特量表。参与者比较两种模式，在各项目中选择符合自己预期的分数。与\ref{ssec:coures_and_qustionnaire}节相同，问卷EC涉及自我定位感（Self-location）、身体所有感（Body-ownership）、动作主体感（Agency）3个方面。此外，作为改进，将问卷VE分为以下3个方面进行评价\cites{sibarani2021usability}：
+问卷与\ref{ssec:coures_and_qustionnaire}节使用的相同，但删除了问卷EC的第14项和第16项，因为与本次实验无关。另外，由于采用被试内设计（within-subjects design），问卷评价使用7级双向李克特量表。参与者比较两种模式，在各项目中选择符合自己预期的分数。与\ref{ssec:coures_and_qustionnaire}节相同，问卷EC涉及自我定位感（Self-location）、身体所有感（Body-ownership）、动作主体感（Agency）3个方面。此外，作为改进，将问卷VE分为以下3个方面进行评价\cite{sibarani2021usability}：
 (1)学习容易性（Learnability）：首次使用产品时能否快速掌握基本任务；
 (2)效率性和精度（Efficiency and Accuracy）：控制器的响应速度和精度；
 (3)满意度（Satisfaction）：用户对产品使用体验的整体主观评价。
@@ -126,7 +126,14 @@
 \textbf{客观评价}\quad
 Mode1与Mode3在通过时间上有显著差异[$t[13]=5.40,p <.0002$]。碰撞次数和飞行距离无显著差异。
 
-\begin{table}[htbp]
+\subsection{讨论}
+
+两个实验的结果表明，本方案在某些方面具有潜在优势。
+
+实验1的问卷EC中"Self-location"和"Body-ownership"两个结果显示，Mode1与Mode2的在沉浸感方面无显著差异。另一方面，问卷VE的"Efficiency and Accuracy"中，Mode1显著优于Mode2。这意味着Mode1更加稳定，对用户动作的反应更快，可靠性更高。该结论也可以从飞行距离的密度分布（图\ref{fig:5.11-dd_distance_exp1}和图\ref{fig:5.12-dd_distance_exp2}）中得到确认。出现这种结果是因为Mode1使用位置映射控制（Position Mapping Control），该控制类似于鼠标指针控制，能够实现高精度控制。另一方面，Mode2采用方向触发控制（Direction Trigger Control），虽然操作方法类似摇杆，但推测精密操作较困难。另外，与摇杆的自动复位不同，Mode2的复位需要依靠自己的感觉将手掌水平倾斜，对用户来说是个挑战。对此，Mode1通过手指接触控制输入的启用·禁用，相比Mode2具有反应更快的优点。
+
+\clearpage
+\begin{table}[t]
     \centering
     \begin{minipage}{\textwidth}
         \centering
@@ -184,71 +191,42 @@ Mode1与Mode3在通过时间上有显著差异[$t[13]=5.40,p <.0002$]。碰撞�
     \end{minipage}
 \end{table}
 
-\subsection{讨论}
-
-两个实验的结果表明，本方案在某些方面具有潜在优势。
-
-实验1的问卷EC中"Self-location"和"Body-ownership"两个结果显示，Mode1与Mode2的在沉浸感方面无显著差异。另一方面，问卷VE的"Efficiency and Accuracy"中，Mode1显著优于Mode2。这意味着Mode1更加稳定，对用户动作的反应更快，可靠性更高。该结论也可以从飞行距离的密度分布（图\ref{fig:5.11-dd_distance_exp1}和图\ref{fig:5.12-dd_distance_exp2}）中得到确认。出现这种结果是因为Mode1使用位置映射控制（Position Mapping Control），该控制类似于鼠标指针控制，能够实现高精度控制。另一方面，Mode2采用方向触发控制（Direction Trigger Control），虽然操作方法类似摇杆，但推测精密操作较困难。另外，与摇杆的自动复位不同，Mode2的复位需要依靠自己的感觉将手掌水平倾斜，对用户来说是个挑战。对此，Mode1通过手指接触控制输入的启用·禁用，相比Mode2具有反应更快的优点。
-
-
-
-% \clearpage
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}{\textwidth}
+\clearpage
+\begin{figure}[htb]
     \includegraphics[width=\textwidth]{fig/5.6-dd_time_exp1.pdf}
     \centering
     \caption{实验1的通过时间}
     \label{fig:5.6-dd_time_exp1}
-    \end{subfigure}
-    
-    \begin{subfigure}{\textwidth}
+
     \includegraphics[width=\textwidth]{fig/5.8-dd_time_exp2.pdf}
     \centering
     \caption{实验2的通过时间}
     \label{fig:5.8-dd_time_exp2}
-    \end{subfigure}
-        \caption{实验通过时间对比}
-    \label{fig:experiments_time}
 \end{figure}
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}{\textwidth}
+\begin{figure}[htb]
     \includegraphics[width=\textwidth]{fig/5.11-dd_distance_exp1.pdf}
     \centering
     \caption{实验1的飞行距离}
     \label{fig:5.11-dd_distance_exp1}
-    \end{subfigure}
-    
-    \begin{subfigure}{\textwidth}
+
     \includegraphics[width=\textwidth]{fig/5.12-dd_distance_exp2.pdf}
     \centering
     \caption{实验2的飞行距离}
     \label{fig:5.12-dd_distance_exp2}
-    \end{subfigure}
-        \caption{实验飞行距离对比}
-    \label{fig:flight_dis}
 \end{figure}
 
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}{\textwidth}
+\begin{figure}[htb]
     \includegraphics[width=\textwidth]{fig/5.9-dd_collision_exp1.pdf}
     \centering
     \caption{实验1的碰撞次数}
     \label{fig:5.9-dd_collision_exp1}
-    \end{subfigure}
-    
-    \begin{subfigure}{\textwidth}
+
     \includegraphics[width=\textwidth]{fig/5.10-dd_collision_exp2.pdf}
     \centering
     \caption{实验2的碰撞次数}
     \label{fig:5.10-dd_collision_exp2}
-    \end{subfigure}
-        \caption{实验碰撞次数对比}
-    \label{fig:collision_cnt}
 \end{figure}
 
 
@@ -279,6 +257,8 @@ Mode1与Mode3在通过时间上有显著差异[$t[13]=5.40,p <.0002$]。碰撞�
     \item 提案方法的改进方向。
           Mode1的设计存在若干课题。例如，动作映射逻辑可能引起误操作，缺乏反馈机制增加了用户操作的心理负担。今后的改进方向包括：优化动作映射逻辑以降低误操作风险，添加物理或触觉反馈以减少对视觉反馈的依赖，以及进一步研究反馈机制以促进自然交互。
 \end{itemize}
+
+\clearpage
 
 %% ---DO NOT MODIFY BEGIN---
 \ifx\allfiles\undefined

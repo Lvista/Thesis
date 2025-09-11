@@ -13,7 +13,7 @@
 
 本章提出了FPV无人机穿戴式单手操作方法的设计方案，并进行了原型和测试系统的设计。
 
-\subsection{方案设计}\label{label:section2.1}
+\subsection{手势遥控基本原理}\label{label:section2.1}
 
 遥控系统的延迟模型可以用以下公式表示：
 \begin{equation}
@@ -78,26 +78,52 @@
 
 对于手指接触·捏取动作手势，利用拇指与其他手指（例如：食指、中指）作为修饰输入，手指间的压力也可以作为额外输入信号。
 
-基于以上的输入，建立一种$x\xrightarrow{}y$的映射，即可实现实时飞行中的位置机动控制。这部分的具体映射在第4章和第5章两次实验前进行说明。
+基于以上的输入，建立一种$x\xrightarrow{} y$的映射，即可实现实时飞行中的位置机动控制。这部分的具体映射在第4章和第5章两次实验前进行说明。
 
+\subsection{问题描述和解决方案}
 
-另外一种方法类似于Kavarthapu\cites{kavarthapu2017hand}的基于深度学习，将手势与命令一一对应的方法。该研究所使用的是一种由基本手势进行排列组合成的通用手势。比如，基本手势包括手的上下左右摆动，组合手势就是由这四个组合成的，长度为n的序列。由于完成一个手势需要时间，将手势经过预测模型输出也需要时间，相对上一种方法实时性较差，本研究将用于对无人机施放离散命令。
+\subsubsection{输入维度问题}
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{fig/3.9-Three-state system.pdf}
+	\caption{三状态系统示意图}
+	\label{fig:3.9-Three-state}
+\end{figure}
+
+如上一节所述，对一个三维空间中运动的4自由物体，位置和姿态可用4个基本动作控制，理论上最少需要3个动作就可以实现在3维空间的移动。而相比双手遥控，单手遥控的可操作广度受限，所以如何设计硬件以满足输入维度就成为一个难点。
+如1.1节概述了几种解决方案，一种是将从IMU得到的姿态数据作为输入，但这仅是一个2维输入，并无法达到遥控需要，因此有多项研究提出了解决方案\cites{mughees2020gesture,budiyanto2021navigation,muezzinouglu2021intelligent,lee2023wearable,cherpillod2019embodied,kim2022intuitive}。
+
+本研究尝试了加速度方案，基本想法是通过加速度积分得到速度，映射到无人机速度。但在无外部参考信息的情况下，由于误差累积效应，无法应用于实时动作映射。另外也尝试了物理输入模块，但便携性受到限制。
+
+综合考虑下，本研究采用多传感器方案，并设计了一种如图\ref{fig:3.9-Three-state}三状态系统来解决输入维度问题。初始状态是State0，在该状态下，主要输入被屏蔽。通过两个不同的触发器(Trigger1和Trigger2)，可以切换输入状态。两个状态(State1和State2)为可接收输入状态，在两个状态下，根据分别设定的Mapping1和Mapping2，传感器输入被映射为不同的无人机动作。因此，如果传感器具有$x$个维度的输入，则可通过上面的状态空间转换，得到$2x$个维度的输入。
+
+基于该状态系统的具体硬件实现将在本章\ref{ssec:num1}节介绍，而Mapping1和Mapping2可以有多种实现，作为例子，将在第4章和第5章展示两种实现。
+
+另外，以上维度问题只考虑了飞行中的机动控制，没考虑到起飞，降落等单独命令。因此，进一步对基于深度学习的手势命令识别进行研究，将在第6章进行介绍。
+
+\subsubsection{实时性和精确度问题}
+
+因为人工接管无人机操控通常是需要精确操作的场景，因此实时性和精确性是重要指标。而就日前的关于手势识别控制研究来看，这一点依然是挑战。一种经典方案是阈值触发，当传感器的输入量或派生量超过一定的阈值时触发对应动作响应，比如GamePad的物理按键输入，IMU的倾斜角\cites{covaciu2022control}、IMU姿态同步\cites{kim2022intuitive}和基于机器学习的各方案。
+
+在这里我们聚焦于基于IMU的方案，两种方案均忽略了“人对手的姿态是不敏感的”的这一推断。该推断从人体结构上分析：手作为人体的一个子部件，其姿态是相对于人体的，从而手的姿态是人体坐标系下得到的，而人体姿态又是在地面坐标系下得到的，因此通过读取IMU的手对于地面坐标系的姿态来输入会带来极大的误差。而在第5章的实验中也证实了这点。
+
+本研究的解决方案是一种相对定位输入，这是一种相对于绝对定位输入的输入映射方式。两种输入方式可用下面公式描述：
+\begin{align}
+    \text{相对定位输入：}y &= k(x_t-x_{t-1})\\
+    \text{绝对定位输入：}y &= kx_t
+\end{align}
+x是输入，y是输出，k是某常量，t是时刻。前述的两种基于IMU的方案均是绝对定位输入。而目前市场上对这两种输入方式的典型实现分别是鼠标和GamePad(摇杆部分)。
+
+对这部分的具体实现将在本章\ref{ssec:simulator}节介绍。
 
 \subsection{原型实现}\label{ssec:num1}
 
 基于以上的控制理论，参考Covaciu\cites{covaciu2022control}等人的设计，进行了硬件原型的设计和实现。
 
 Covaciu\cites{covaciu2022control}采用CPU（图\ref{fig:3.5-circuit}-6）与IMU （图\ref{fig:3.5-circuit}-5）的设计，本方案在此基础上加入薄膜压力传感
-器（图\ref{fig:3.5-circuit}-(1-2)），和铜箔 （图\ref{fig:3.5-circuit}-(1-1)，2，3）。电路的仿真示意图如图\ref{fig:4.2-1-circuit}所示。
+器（图\ref{fig:3.5-circuit}-(1-2)），和铜箔（图\ref{fig:3.5-circuit}-(1-1)，2，3）。电路的仿真示意图如图\ref{fig:4.2-1-circuit}所示，其中食指和中指的铜箔分别作为Trigger1和Trigger2用于转换系统状态。
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1\linewidth]{fig/test.pdf}
-    \caption{Enter Caption}
-    \label{fig:placeholder}
-\end{figure}
-
-所使用的组件规格如表\ref{tab:hardware}所示。CPU和IMU参考已有研究\cites{covaciu2022control}，采用带有无线传输的低功耗的ESP32，以及集成加速度计和陀螺仪的IMU，两者通过SCL和SDA双通道连接。为了扩展控制维度，本研究加入了小型薄膜压力传感器。传感器压力上限为22N，其阻值-压力关系是一个近似反比例曲线。由于实际测量该曲线较为困难，采用了生产厂家提供的经验曲线，如图\ref{fig:placeholder}。参考一项关于指侧捏力的研究\cites{呼慧敏2022中国成年人指侧捏力测量研究}，我们确定人在日常使用设备时捏力在5N至50N之间，对应于图中500g以上压力值，该部分近似线性。假定线性部分的阻值-压力关系如下：
+所使用的组件规格如表\ref{tab:hardware}所示。CPU和IMU参考已有研究\cites{covaciu2022control}，采用带有无线传输的低功耗的ESP32，以及集成加速度计和陀螺仪的IMU，两者通过SCL和SDA双通道连接。为了扩展控制维度，本研究加入了小型薄膜压力传感器。传感器压力上限为22N，其阻值-压力关系是一个近似反比例曲线。由于实际测量该曲线较为困难，采用了生产厂家提供的经验曲线，如图\ref{fig:3.10-R_P}。参考一项关于指侧捏力的研究\cites{呼慧敏2022中国成年人指侧捏力测量研究}，我们确定人在日常使用设备时捏力在5N至50N之间，对应于图中500g以上压力值，该部分近似线性。假定线性部分的阻值-压力关系如下：
 $$
 R = kF+R_0, F<22
 $$
@@ -111,7 +137,27 @@ $$
 
 控制器原型实物如图\ref{fig:4.2-2-prototype}所示。CPU和IMU通过PCB电气连接并附着在手掌背部，用于手的姿势检测。薄膜压力传感器附在大拇指里侧，检测大拇指与其它手指之间的捏力。铜箔检测指间的触碰。
 
-\begin{table}[b]
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/3.10-R_P.pdf}
+    \caption{压力传感器压力与电阻关系}
+    \label{fig:3.10-R_P}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
+    \caption{电路示意图}
+    \label{fig:3.5-circuit}
+
+    \vspace{-10pt}
+    \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
+    \caption{原型电路图：}
+    \label{fig:4.2-1-circuit}
+    \vspace{-20pt}
+\end{figure}
+
+\begin{table}
     \centering
     \caption{\label{tab:hardware}组件规格}
     \begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm} p{4cm} p{4cm}}
@@ -127,23 +173,6 @@ $$
     \end{tabular}
 \end{table}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
-    \caption{电路示意图}
-    \label{fig:3.5-circuit}
-\end{figure}
-
-\begin{figure}
-    \vspace{-10pt}
-    \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
-    \caption{原型电路图：}
-    \label{fig:4.2-1-circuit}
-    \vspace{-20pt}
-\end{figure}
-
-
-
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.7\linewidth]{ fig/3.6-prototype.png}
@@ -153,7 +182,7 @@ $$
 
 \clearpage
 
-\subsection{仿真器实现}
+\subsection{仿真器实现}\label{ssec:simulator}
 
 使用Unity3D引擎构建无人机仿真器系统。
 
@@ -225,6 +254,7 @@ $$
 
 \subsection{小结}
 本章提出了面向FPV无人机操作的动态手势交互界面，通过手腕旋转和手指接触等动作实现了高效且直观的控制。基于这一交互界面，采用低功耗、高精度的传感器和无线通信技术，设计并实现了穿戴式控制器原型。此外，使用Unity3D引擎构建了无人机仿真器系统。这为今后的界面可用性研究和优化奠定了基础。
+
 \clearpage
 %% ---DO NOT MODIFY BEGIN---
 \ifx\allfiles\undefined

@@ -15,7 +15,7 @@
 
 \subsection{问题描述}
 
-考虑由简单个手势组合成的序列手势，将该序列手势的变长传感器信号序列经过编码和解码得到手势的具体组合。另外，试图找到一种预测模型，使得通过学习基本手势就可以用于预测其派生组合手势，那么模型就不用针对新手势重新训练。
+考虑由单个手势组合成的序列手势，将该序列手势的变长传感器信号序列经过编码和解码得到手势的具体组合。另外，试图找到一种预测模型，使得通过学习基本手势就可以用于预测其派生组合手势，那么模型就不用针对新手势重新训练。
 
 具体来说，考虑变长时间序列预测问题，令输入序列的最长为$w_{max}$，最短为$w_{min}$，则可定义输入空间和输出空间为：
 \begin{align}
@@ -28,8 +28,19 @@
 $$f: \mathcal{X} \rightarrow \mathcal{Y}$$
 使得$\mathbf{y} = f(\mathbf{X}) \in \mathcal{Y}$，其中$\mathbf{y}$为输出手势的编码。
 
-对于监督学习模型，在实际应用中我们只能观测到有限的训练样本。给定观测数据集$\mathcal{D} =\{(\mathbf{X}_i, \mathbf{y}_i)\}_{i=1}^N$，其中每个观测样本$(\mathbf{X}_i, \mathbf{y}_i)$是从理论空间$\mathcal{X} \times \mathcal{Y}$中采样得到的，即$\mathbf{X}_i \in \mathcal{X}$，$\mathbf{y}_i \in \mathcal{Y}$，且$\mathcal{D} \subset \mathcal{X} \times \mathcal{Y}$。基于这些有限的观测样本，学习预测函数$\hat{f}_\theta: \mathcal{X} \rightarrow \mathcal{Y}$，使得$\hat{\mathbf{y}}_i=\hat{f}_\theta(\mathbf{X}_i)\approx\mathbf{y}_i$，$\forall (\mathbf{X}_i, \mathbf{y}_i) \in \mathcal{D}$。
+对于监督学习模型，在实际应用中我们只能观测到有限的训练样本。给定观测数据集$\mathcal{D} =\{(\mathbf{X}_i, \mathbf{y}_i)\}_{i=1}^N$，其中每个观测样本$(\mathbf{X}_i, \mathbf{y}_i)$是从理论空间$\mathcal{X} \times \mathcal{Y}$中采样得到的，即$\mathbf{X}_i \in \mathcal{X}$，$\mathbf{y}_i \in \mathcal{Y}$，且$\mathcal{D} \subset \mathcal{X} \times \mathcal{Y}$。基于这些有限的观测样本，学习预测函数$\hat{f}: \mathcal{X} \rightarrow \mathcal{Y}$，使得$\hat{\mathbf{y}}_i=\hat{f}(\mathbf{X}_i)\approx\mathbf{y}_i$，$\forall (\mathbf{X}_i, \mathbf{y}_i) \in \mathcal{D}$。
 
+回到本研究面对的主要问题，描述的是这样的情况，当训练集$\mathcal{D}$只包含部分输出序列长度的样本，即：
+\begin{align}
+&\mathcal{D}_{j=a} \subset (\mathcal{X} \times \mathcal{Y})_{j=a}, a \in (1, w)
+\end{align}
+$a$是一常量，如当$a=1$时，表示样本均为单手势样本。用该观测数据集$\mathcal{D}_{j=a}$得到的预测函数$\hat{f}_{j=a}$使得：
+\begin{align}
+\hat{\mathbf{y}}_i=\hat{f}_{j=a}(\mathbf{X}_i)\approx\mathbf{y}_i, \forall (\mathbf{X}_i, \mathbf{y}_i) \in \mathcal{D}
+\end{align}
+注意到$\mathcal{D}_{j=a}\in \mathcal{D}$，所以上式意味着$\hat{f}_{j=a}$对于$\mathcal{D}_{j\neq a}$也具有预测能力。
+
+如果能解决这个问题，对于序列手势，只需要收集部分数据$\mathcal{D}_{j=a}$，而不是整个数据集$\mathcal{D}$。
 
 \subsection{数据收集和数据增强}\label{ssec:data_clct}
 
@@ -121,6 +132,8 @@ $$
 
 基于CTC的模型框架如图\ref{fig:6.3-encoder_decoder}所示。在这里，原始输入是一个时序长度为$w$，样本大小为$n\times 1$的时序序列。$w$大小由采集样本实际时序长度决定，$n$为原始特征维度，在这里取6。在实践中，剪裁输入空间为$\mathbb{R}^{n\times w}$。
 
+与传统的编码-解码结构不同，CTC解码算法直接从特征序列进行解码，模型（Model）将源输入特征序列进行特征转换，得到$c\times k$的概率分布矩阵（probability distribution, p.d.），然后对该矩阵进行最大概率分类（Argmax Classification）得到编码序列，编码序列通过后处理（Post-processing）得到目标输出。在这里，用一个例子说明这个后处理过程。如表\ref{tab:output_eg}所示是前述的概率分布矩阵示例，每一行代表一个数据帧（或数据段），显示了其在$c=5$个手势分类上的概率，每行概率合为1。
+
 \begin{table}[htbp]
   \centering
   \caption{概率分布矩阵示例}
@@ -147,12 +160,6 @@ $$
     \caption{CTC解码模型框架}
     \label{fig:6.3-encoder_decoder}
 \end{figure}
-
-与传统的编码-解码结构不同，CTC解码算法直接从特征序列进行解码，模型（Model）将源输入特征序列进行特征转换，得到$c\times k$的概率分布矩阵（probability distribution, p.d.），然后对该矩阵进行最大概率分类（Argmax Classification）得到编码序列，编码序列通过后处理（Post-processing）得到目标输出。在这里，用一个例子说明这个后处理过程。如表\ref{tab:output_eg}所示是前述的概率分布矩阵示例，每一行代表一个数据帧（或数据段），显示了其在$c=5$个手势分类上的概率，每行概率合为1。
-
-
-
-
 
 对该矩阵进行最大概率分类（Argmax Classification），即$argmax$函数，得到编码后的输出$(0, 0, 1, 1, 0, 3, 0, 0)$，再按CTC解码\cites{graves2006connectionist}，通过去0和去重，例如上述例子经过CTC解码后得到手势序列$(1, 3)$，它的含义是[上划，左划]。
 
