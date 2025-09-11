@@ -17,9 +17,9 @@
 
 \subsection{动作映射}
 
-本实验使用所提出的原型和Logicool Gamepad F310（图\ref{5.1-1-logicool}）作为输入设备。
+本实验使用所提出的原型和Logicool Gamepad F310（图\ref{5.1-1-logicool}）作为输入设备。使用如下的Mapping1和Mapping2.
 
-表\ref{tab:gesture}显示了所提出原型的输入（手势）与无人机动作的映射关系，“无人机输入”对应于3.2节各个动作的输入。在此映射中，当拇指与食指接触时，激活“可前进”状态，在该状态下，通过手部的Yaw、Pitch、用力捏取这3个动作的组合实现无人机在三维空间中的移动；当拇指与中指接触时，激活“可后退”状态，在该状态下，通过手部的Yaw和用力捏取动作来控制无人机的后退与后退偏移。这种设计有以下原因：
+表\ref{tab:gesture}显示了所提出原型的输入（手势）与无人机动作的映射关系，“无人机输入”对应于3.2节各个动作的输入。在此映射中，当拇指与食指接触时，系统进入Mapping1状态，在该状态下，通过手部的Yaw、Pitch、用力捏取这3个动作的组合实现无人机在三维空间中的移动；当拇指与中指接触时，系统进入Mapping2状态，在该状态下，通过手部的Yaw和用力捏取动作来控制无人机的后退与后退偏移。这种设计有以下原因：
 
 \begin{table}[htbp]
     \centering
@@ -28,12 +28,12 @@
         \toprule
         \textbf{状态} & \textbf{手势}           & \textbf{无人机输入} & \textbf{无人机动作} \\
         \midrule
-        \multirow{3}{3cm}{可前进}
+        \multirow{3}{3cm}{Mapping1}
                       & 手腕左右旋转 (Yaw)       & \(u_y\)        & 视角旋转 (Yaw)    \\
                       & 手腕上下运动 (Pitch)     & \(u_t\)        & 升降 (Throttle) \\
                       & 用力捏取               & \(u_p\)        & 前进            \\
         \midrule
-        \multirow{3}{3cm}{可后退}
+        \multirow{3}{3cm}{Mapping2}
                       & 手腕左右旋转 (Yaw)       & \(u_r\)        & 横移 (Roll)     \\
                       & 手腕上下旋转 (Pitch)     & 无               & 无             \\
                       & 用力捏取               & \(u_p\)        & 后退            \\
@@ -120,7 +120,7 @@ GamePad使用两个摇杆作为位置控制的输入。左摇杆控制水平面�
     \end{tabular}
 \end{table}
 
-\begin{table}[]
+\begin{table}[htbp]
     \centering
     \caption{问卷VE（Virtual Experience）}
     \label{tab:Q2}
@@ -166,7 +166,9 @@ GamePad使用两个摇杆作为位置控制的输入。左摇杆控制水平面�
         \includegraphics[width=\textwidth]{fig/4.4-line_chart_flight_time_trend.png}
     \end{subfigure}
     \caption{\label{fig:5.4-1-exp1_time_and_collision}平均碰撞次数和平均通过时间}
+\end{figure}
 
+\begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{fig/4.6-questionnaire_1and2_t-test.png}
     \caption{\label{fig:5.4-1-result-Q1Q2}“身体认知”结果（左）“VR体验”结果（右）}
