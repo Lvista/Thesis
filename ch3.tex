@@ -97,7 +97,7 @@
 
 综合考虑下，本研究采用多传感器方案，并设计了一种如图\ref{fig:3.9-Three-state}三状态系统来解决输入维度问题。初始状态是State0，在该状态下，主要输入被屏蔽。通过两个不同的触发器(Trigger1和Trigger2)，可以切换输入状态。两个状态(State1和State2)为可接收输入状态，在两个状态下，根据分别设定的Mapping1和Mapping2，传感器输入被映射为不同的无人机动作。因此，如果传感器具有$x$个维度的输入，则可通过上面的状态空间转换，得到$2x$个维度的输入。
 
-基于该状态系统的具体硬件实现将在本章\ref{ssec:num1}节介绍，而Mapping1和Mapping2可以有多种实现，作为例子，将在第4章和第5章展示两种实现。
+基于该状态系统的具体硬件实现将在本章\ref{ssec:prt}节介绍，而Mapping1和Mapping2可以有多种实现，作为例子，将在第4章和第5章展示两种实现。
 
 另外，以上维度问题只考虑了飞行中的机动控制，没考虑到起飞，降落等单独命令。因此，进一步对基于深度学习的手势命令识别进行研究，将在第6章进行介绍。
 
@@ -116,7 +116,7 @@ x是输入，y是输出，k是某常量，t是时刻。前述的两种基于IMU�
 
 对这部分的具体实现将在本章\ref{ssec:simulator}节介绍。
 
-\subsection{原型实现}\label{ssec:num1}
+\subsection{原型实现}\label{ssec:prt}
 
 基于以上的控制理论，参考Covaciu\cites{covaciu2022control}等人的设计，进行了硬件原型的设计和实现。
 
@@ -146,13 +146,13 @@ $$
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=1\linewidth]{fig/3.5-circuit.pdf}
+    \includegraphics[width=.8\linewidth]{fig/3.5-circuit.pdf}
     \caption{电路示意图}
     \label{fig:3.5-circuit}
 
     \vspace{-10pt}
     \includegraphics[width=.7\linewidth]{ fig/3.6-circuit-real.pdf}
-    \caption{原型电路图：}
+    \caption{原型电路图}
     \label{fig:4.2-1-circuit}
     \vspace{-20pt}
 \end{figure}
