@@ -13,6 +13,7 @@ This repo is the source files of my Master of Engineering Thesis.
 - `main.bib`: Citation.
 
 ## How to compile
+Texlive: pdfTeX 3.141592653-2.6-1.40.27 (TeX Live 2025)
 
 xelatex -> biber -> xelatex*2
 
