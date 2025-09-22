@@ -22,11 +22,17 @@
   {}
 
 \addbibresource{main.bib}  % 你的 .bib 文件
-
+% 设置参考文献标题为中文
+\DefineBibliographyStrings{english}{
+  references = {参考文献}
+}
 % Figure
 \usepackage{graphicx,xcolor}
 % \usepackage{subfigure} % 子图支持
+\usepackage{caption}
 \usepackage{subcaption} % 子图支持
+\DeclareCaptionLabelSeparator{mysep}{\hspace{2em}}
+\captionsetup{labelsep=quad} % 图和表标题去掉冒号
 \usepackage{pdfpages} % insert multi-page PDF
 \usepackage{bm}
 \usepackage{amssymb}
