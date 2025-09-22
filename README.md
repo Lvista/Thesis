@@ -18,8 +18,8 @@ Texlive: pdfTeX 3.141592653-2.6-1.40.27 (TeX Live 2025)
 xelatex -> biber -> xelatex*2
 
 ``` shell
-xelatex -synctex=1 -interaction=nonstopmode -file-line-error %DOCFILE%
-biber %DOCFILE%
+xelatex -synctex=1 -interaction=nonstopmode -file-line-error all.tex
+biber all
 ```
 
 In the case of VScode, edit the `settings.json`
