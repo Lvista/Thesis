@@ -1,5 +1,34 @@
 \documentclass[12pt]{ctexart}
-\usepackage[backend=biber,style=numeric,sorting=none, backref=true]{biblatex}  % 使用 APA 格式
+\usepackage[backend=biber,style=numeric,sorting=none, backref=true]{biblatex}
+\usepackage{graphicx,xcolor}
+\usepackage{caption}
+\usepackage{subcaption} % 子图支持
+\usepackage{chngcntr}
+\usepackage{pdfpages} % insert multi-page PDF
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{amsmath}
+
+% 设置章节标题格式（针对section）
+\ctexset{
+    section = {
+        format = \centering\heiti\Large,
+        name = {第,章},
+        number = \arabic{section},
+        aftername = \hspace{0.5em}
+    },
+    subsection = {
+        format = \raggedright\heiti\large,
+        name = {},
+        number = \arabic{section}.\arabic{subsection},
+        aftername = \hspace{0.5em}
+    }
+}
 
 % 设置为右上角标
 % 方括号引用命令（行内）
@@ -23,46 +52,35 @@
   {}
 
 \addbibresource{main.bib}  % 你的 .bib 文件
+
 % 设置参考文献标题为中文
 \DefineBibliographyStrings{english}{
   references = {参考文献}
 }
-% Figure
-\usepackage{graphicx,xcolor}
-% \usepackage{subfigure} % 子图支持
-\usepackage{caption}
-\usepackage{subcaption} % 子图支持
+
+% 图注设置
 \captionsetup[figure]{
-    labelsep=quad,          % 标签和标题之间的间距
-    name=图,                % 将"Figure"改为"图"
-    format=plain,           % 格式
-    font=small,             % 字体大小
-    labelfont=bf            % 标签字体为粗体
+    labelsep=quad,
+    name=图,
+    format=plain,
+    font=small,
+    labelfont=bf
 }
-% 设置表注格式
+
+% 表注设置
 \captionsetup[table]{
-    labelsep=quad,          % 标签和标题之间的间距
-    name=表,                % 将"Table"改为"表"
-    format=plain,           % 格式
-    font=small,             % 字体大小
-    labelfont=bf            % 标签字体为粗体
+    labelsep=quad,
+    name=表,
+    format=plain,
+    font=small,
+    labelfont=bf
 }
-\usepackage{chngcntr}
-\counterwithin{figure}{section}  % 图编号按章节编号
-\counterwithin{table}{section}   % 表编号按章节编号
-\usepackage{pdfpages} % insert multi-page PDF
-\usepackage{bm}
-\usepackage{amssymb}
-% Table
-\usepackage{array}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{tabularx}
-\usepackage{makecell}
 
-% Formula
-\usepackage{amsmath}
+% 图和表按节编号
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
 
-% Set
-% \setcounter{secnumdepth}{3}
-% \usepackage{xcolor}
+% 如果需要按章节编号（如果使用chapter），但ctexart没有chapter
+% 如果确实需要章节，建议改用ctexbook文档类
+% \renewcommand{\thefigure}{\thesection.\arabic{figure}}
+% \renewcommand{\thetable}{\thesection.\arabic{table}}
