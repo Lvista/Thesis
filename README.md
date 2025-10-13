@@ -11,6 +11,7 @@ This repo is the source files of my Master of Engineering Thesis.
 - `front_pages.tex`: Contain the abstract and the conver.
 - `chx.tex`: Every chapter.
 - `main.bib`: Citation.
+- `./fig/`: Graphs(⚠ No graphs in this repo)
 
 ## How to compile
 Texlive: pdfTeX 3.141592653-2.6-1.40.27 (TeX Live 2025)
@@ -21,6 +22,7 @@ xelatex -> biber -> xelatex*2
 xelatex -synctex=1 -interaction=nonstopmode -file-line-error all.tex
 biber all
 ```
+> ⚠ complie must be failed becouse no graphs here, please contact me if you need.
 
 In the case of VScode, edit the `settings.json`
 

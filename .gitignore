@@ -4,3 +4,7 @@
 !.gitignore
 !*.tex
 !*.bib
+
+!fig/
+fig/*
+!/fig/README.md
