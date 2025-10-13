@@ -1,5 +1,6 @@
 \documentclass[12pt]{ctexart}
 \usepackage[backend=biber,style=numeric,sorting=none, backref=true]{biblatex}  % 使用 APA 格式
+
 % 设置为右上角标
 % 方括号引用命令（行内）
 \DeclareCiteCommand{\citeb}[\mkbibbrackets]
@@ -31,12 +32,27 @@
 % \usepackage{subfigure} % 子图支持
 \usepackage{caption}
 \usepackage{subcaption} % 子图支持
-\DeclareCaptionLabelSeparator{mysep}{\hspace{2em}}
-\captionsetup{labelsep=quad} % 图和表标题去掉冒号
+\captionsetup[figure]{
+    labelsep=quad,          % 标签和标题之间的间距
+    name=图,                % 将"Figure"改为"图"
+    format=plain,           % 格式
+    font=small,             % 字体大小
+    labelfont=bf            % 标签字体为粗体
+}
+% 设置表注格式
+\captionsetup[table]{
+    labelsep=quad,          % 标签和标题之间的间距
+    name=表,                % 将"Table"改为"表"
+    format=plain,           % 格式
+    font=small,             % 字体大小
+    labelfont=bf            % 标签字体为粗体
+}
+\usepackage{chngcntr}
+\counterwithin{figure}{section}  % 图编号按章节编号
+\counterwithin{table}{section}   % 表编号按章节编号
 \usepackage{pdfpages} % insert multi-page PDF
 \usepackage{bm}
 \usepackage{amssymb}
-
 % Table
 \usepackage{array}
 \usepackage{booktabs}
